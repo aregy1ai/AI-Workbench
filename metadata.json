@@ -1,0 +1,6 @@
+{
+  "name": "AI Workbench — Agentic Control Plane",
+  "description": "Enterprise Agentic Control Plane governing AI agent lifecycle from identity to execution, sandboxing, policy enforcement, audit hash-chains, and budget control.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

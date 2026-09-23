@@ -5,6 +5,11 @@ import { RunSimulatorTab } from "./components/RunSimulatorTab";
 import { ToolGatewayTab } from "./components/ToolGatewayTab";
 import { AuditLedgerTab } from "./components/AuditLedgerTab";
 import { SecurityTestsTab } from "./components/SecurityTestsTab";
+import { SandboxSchedulerTab } from "./components/SandboxSchedulerTab";
+import { EcosystemPlatformTab } from "./components/EcosystemPlatformTab";
+import { ContinuousImprovementTab } from "./components/ContinuousImprovementTab";
+import { AutonomousOperationsTab } from "./components/AutonomousOperationsTab";
+import { EnterprisePolicyTab } from "./components/EnterprisePolicyTab";
 import { CodeExplorerTab } from "./components/CodeExplorerTab";
 import { SAMPLE_TENANTS } from "./data/mockData";
 import { TenantInfo } from "./types";
@@ -17,13 +22,28 @@ import {
   ShieldCheck,
   FolderTree,
   Cpu,
+  Box,
+  Globe,
+  TrendingUp,
+  Bot,
+  Code2,
 } from "lucide-react";
 
 export default function App() {
   const [tenants] = useState<TenantInfo[]>(SAMPLE_TENANTS);
   const [currentTenant, setCurrentTenant] = useState<TenantInfo>(SAMPLE_TENANTS[0]);
   const [activeTab, setActiveTab] = useState<
-    "engine" | "simulator" | "tools" | "audit" | "security" | "code"
+    | "engine"
+    | "simulator"
+    | "tools"
+    | "sandbox"
+    | "ecosystem"
+    | "continuous_improvement"
+    | "autonomous_operations"
+    | "enterprise_policy"
+    | "audit"
+    | "security"
+    | "code"
   >("engine");
 
   // Metrics trigger for header updates
@@ -96,6 +116,66 @@ export default function App() {
             </button>
 
             <button
+              onClick={() => setActiveTab("sandbox")}
+              className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                activeTab === "sandbox"
+                  ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+              }`}
+            >
+              <Box className="w-4 h-4" />
+              <span>Sandbox Scheduler & GitHub (Sprint 5)</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("ecosystem")}
+              className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                activeTab === "ecosystem"
+                  ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+              }`}
+            >
+              <Globe className="w-4 h-4" />
+              <span>GA & Ecosystem Platform (Sprint 11)</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("continuous_improvement")}
+              className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                activeTab === "continuous_improvement"
+                  ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+              }`}
+            >
+              <TrendingUp className="w-4 h-4" />
+              <span>Continuous Improvement (Sprint 12)</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("autonomous_operations")}
+              className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                activeTab === "autonomous_operations"
+                  ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+              }`}
+            >
+              <Bot className="w-4 h-4" />
+              <span>Autonomous Operations (Sprint 13)</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("enterprise_policy")}
+              className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+                activeTab === "enterprise_policy"
+                  ? "bg-purple-500/10 text-purple-400 border border-purple-500/30 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+              }`}
+            >
+              <Code2 className="w-4 h-4" />
+              <span>Enterprise Policy (Sprint 14)</span>
+            </button>
+
+            <button
               onClick={() => setActiveTab("audit")}
               className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
                 activeTab === "audit"
@@ -154,6 +234,36 @@ export default function App() {
           <ToolGatewayTab
             currentTenant={currentTenant}
             onRefreshMetrics={refreshMetrics}
+          />
+        )}
+
+        {activeTab === "sandbox" && (
+          <SandboxSchedulerTab
+            currentTenant={currentTenant}
+          />
+        )}
+
+        {activeTab === "ecosystem" && (
+          <EcosystemPlatformTab
+            currentTenant={currentTenant}
+          />
+        )}
+
+        {activeTab === "continuous_improvement" && (
+          <ContinuousImprovementTab
+            currentTenant={currentTenant}
+          />
+        )}
+
+        {activeTab === "autonomous_operations" && (
+          <AutonomousOperationsTab
+            currentTenant={currentTenant}
+          />
+        )}
+
+        {activeTab === "enterprise_policy" && (
+          <EnterprisePolicyTab
+            currentTenant={currentTenant}
           />
         )}
 

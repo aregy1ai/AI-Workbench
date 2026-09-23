@@ -6,6 +6,8 @@
 import { Run, RunStatus } from "../../contracts/src/run";
 import { assertTransition } from "./state-machine";
 
+export type { Run, RunStatus };
+
 export class RunRepository {
   private runs: Map<string, Run> = new Map();
 
@@ -79,6 +81,21 @@ export class RunRepository {
     const run = this.runs.get(runId);
     if (!run) throw new Error("RUN_NOT_FOUND");
     return this.transition(runId, "cancelled", run.version);
+  }
+
+  public async assertExecutable(runId: string, cancellationEpoch?: number): Promise<Run> {
+    const run = this.runs.get(runId);
+    if (!run) throw new Error("RUN_NOT_FOUND");
+    if (run.status === "cancelled" || run.status === "cancelling") {
+      throw new Error("RUN_CANCELLED");
+    }
+    if (["succeeded", "failed"].includes(run.status)) {
+      throw new Error("RUN_ALREADY_COMPLETED");
+    }
+    if (cancellationEpoch !== undefined && run.cancellationEpoch !== cancellationEpoch) {
+      throw new Error("RUN_CANCELLED");
+    }
+    return run;
   }
 
   public clear(): void {

@@ -32,6 +32,12 @@ export class WorkerLeaseManager {
     const now = Date.now();
 
     if (existingLease && existingLease.expiresAt > now) {
+      // If the same worker is claiming the run again, or lease is within active heartbeat, renew it
+      if (existingLease.workerId === workerId) {
+        existingLease.expiresAt = now + WorkerLeaseManager.LEASE_DURATION_MS;
+        existingLease.heartbeatAt = now;
+        return existingLease;
+      }
       throw new Error("RUN_ALREADY_CLAIMED");
     }
 

@@ -36,6 +36,36 @@ export class SecretBroker {
     return lease;
   }
 
+  public async issueGitHubLease(params: {
+    repositoryId: string;
+    permissions: string[];
+    tenantId?: string;
+    workspaceId?: string;
+    runId?: string;
+  }): Promise<{ leaseId: string; token: string }> {
+    const ttlMs = 10 * 60_000;
+    const expiresAt = new Date(Date.now() + ttlMs);
+    const leaseId = `sec_lease_gh_${Math.random().toString(36).substring(2, 9)}_${Date.now()}`;
+
+    const lease: SecretLease = {
+      id: leaseId,
+      secretType: "github-installation-token",
+      provider: "github",
+      scope: {
+        repositoryId: params.repositoryId,
+        permissions: params.permissions,
+      },
+      expiresAt,
+      status: "active",
+      tenantId: params.tenantId,
+      workspaceId: params.workspaceId,
+      runId: params.runId,
+    };
+
+    this.leases.set(leaseId, lease);
+    return { leaseId, token: `ghs_ephemeral_${Math.random().toString(36).substring(2, 16)}` };
+  }
+
   /**
    * Atomically revokes a secret lease immediately upon tool completion or run cancellation
    */

@@ -10,7 +10,7 @@ export interface ParallelToolTask {
   toolName: string;
   input: any;
   dependsOn?: string[]; // IDs of tasks that must finish before this task can start
-  status: "pending" | "running" | "completed" | "failed" | "skipped";
+  status?: "pending" | "running" | "completed" | "failed" | "skipped";
   startedAt?: number;
   completedAt?: number;
   durationMs?: number;

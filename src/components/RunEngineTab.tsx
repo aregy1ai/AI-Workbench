@@ -170,20 +170,20 @@ export const RunEngineTab: React.FC<RunEngineTabProps> = ({ currentTenant, onRef
   };
 
   const sprint2GateItems = [
-    { label: "Task / Run / Step migrations (006_run_engine.sql)", done: true },
-    { label: "Run state machine transitions & invariants verified", done: true },
-    { label: "Optimistic locking (version column & STALE_RUN_VERSION)", done: true },
-    { label: "Operation deduplication (clientRequestId idempotency)", done: true },
-    { label: "Redis Streams queue (run:queue, run:priority, DLQ)", done: true },
-    { label: "Worker lease (30s timeout) & heartbeat (10s interval)", done: true },
-    { label: "Worker crash auto-recovery sweeps back to queue", done: true },
-    { label: "Stale worker version write rejected", done: true },
-    { label: "Cancellation epoch invalidation stops next steps", done: true },
-    { label: "Deep cancellation terminates sandbox & revokes secrets", done: true },
-    { label: "Transactional Outbox prevents lost events", done: true },
-    { label: "Dead-Letter queue limits retries to MAX_ATTEMPTS=5", done: true },
-    { label: "Cross-tenant cancel rejected with RUN_NOT_FOUND", done: true },
-    { label: "Full state transitions audited in Hash-Chained ledger", done: true },
+    { label: "ترحيل جداول Task / Run / Step بقاعدة البيانات (006_run_engine.sql)", done: true },
+    { label: "التحقق من انتقالات آلة حالة التشغيل وثوابتها الصارمة", done: true },
+    { label: "القفل التفاؤلي وحماية التضارب عبر عمود version وSTALE_RUN_VERSION", done: true },
+    { label: "منع التكرار وضمان التطابق عبر معرف الطلب clientRequestId", done: true },
+    { label: "طابور رسائل Redis وعزل الرسائل الميتة (run:queue, run:priority, DLQ)", done: true },
+    { label: "عقد تشغيل العامل المؤقت (30 ثانية) ونبضات القلب (10 ثوان)", done: true },
+    { label: "الاسترداد الآلي عند انهيار العامل وإعادة الجدولة في الطابور", done: true },
+    { label: "رفض كتابات العامل القديمة عند انتهاء صلاحية العقد", done: true },
+    { label: "إبطال حقبة الإلغاء فورياً لإيقاف الخطوات اللاحقة", done: true },
+    { label: "الإلغاء العميق لإنهاء الحاوية وسحب المفاتيح السرية", done: true },
+    { label: "صندوق الصادر التداولي (Transactional Outbox) لمنع فقدان الأحداث", done: true },
+    { label: "حصر محاولات الرسائل الميتة DLQ بحد أقصى MAX_ATTEMPTS=5", done: true },
+    { label: "رفض إلغاء المهام عبر المستأجرين الآخرين برمز RUN_NOT_FOUND", done: true },
+    { label: "تدقيق كامل انتقالات الحالة في سجل السلسلة التشفيرية Hash-Chain", done: true },
   ];
 
   const allTestsPassed = testResults.length > 0 && testResults.every((t) => t.passed);
@@ -194,27 +194,27 @@ export const RunEngineTab: React.FC<RunEngineTabProps> = ({ currentTenant, onRef
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="flex items-center space-x-2">
-              <span className="text-xs uppercase font-semibold text-cyan-400 bg-cyan-950/60 border border-cyan-500/30 px-2 py-0.5 rounded">
-                Sprint 2 — Run Engine
+            <div className="flex items-center space-x-reverse space-x-2">
+              <span className="text-xs font-bold text-cyan-400 bg-cyan-950/60 border border-cyan-500/30 px-2 py-0.5 rounded">
+                المرحلة 2 — محرك تشغيل الوكلاء
               </span>
-              <span className="text-xs text-slate-400">Durable State Machine & Worker Heartbeat</span>
+              <span className="text-xs text-slate-400">آلة الحالة الدائمة وعقود نبضات العامل</span>
             </div>
             <h2 className="text-lg font-bold text-white tracking-tight">
-              Task → Run → Step Lifecycle, Worker Lease & Recovery Engine
+              دورة حياة المهمة والتشغيل والخطوات، عقود العاملين ومحرك الاسترداد
             </h2>
             <p className="text-xs text-slate-400 max-w-3xl">
-              PostgreSQL-backed state machine with optimistic locking, Redis queue integration, worker lease heartbeat, cancellation epoch invalidation, and transactional outbox.
+              محرك تشغيل مبني على قاعدة بيانات PostgreSQL مع قفل تفاؤلي، تكامل طوابير Redis Streams، عقود العاملين المؤقتة مع نبضات القلب، وإبطال دورة الإلغاء، مع دعم صندوق الصادر للمعاملات.
             </p>
           </div>
 
           <button
             onClick={handleRunTests}
             disabled={testingRunning}
-            className="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-xs shadow flex items-center space-x-1.5 transition-all shrink-0"
+            className="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-xs shadow flex items-center space-x-reverse space-x-1.5 transition-all shrink-0 cursor-pointer"
           >
             <Play className="w-3.5 h-3.5 fill-white" />
-            <span>{testingRunning ? "Running Suite..." : `Run Sprint 2 Tests (${testResults.length})`}</span>
+            <span>{testingRunning ? "جاري الفحص..." : `تشغيل اختبارات محرك التشغيل (${testResults.length})`}</span>
           </button>
         </div>
 

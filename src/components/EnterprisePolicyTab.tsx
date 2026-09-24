@@ -263,9 +263,8 @@ spec:
 
       const bundle = policyCompilerToolchain.compile(ast);
       setActiveBundle(bundle);
-      alert(`Policy Compiled & Signed Successfully!\nBundle Hash: ${bundle.compiledHash}\nSignature: ${bundle.signature}`);
     } catch (e: any) {
-      alert(`Compilation Failed: ${e.message}`);
+      console.error(`Compilation Failed: ${e.message}`);
     }
   };
 
@@ -332,9 +331,8 @@ spec:
     try {
       const updated = multiStageApprovalService.submitApproval(requestId, `user_${role}_99`, role);
       setApprovalRequests(multiStageApprovalService.getRequests());
-      alert(`Approval Recorded!\nState: ${updated.state}\nTotal Approvals: ${updated.approvalsCollected.length}`);
     } catch (e: any) {
-      alert(e.message);
+      console.error("Approval error:", e.message);
     }
   };
 
@@ -373,19 +371,18 @@ spec:
   return (
     <div className="space-y-6 text-slate-100">
       {/* Top Banner / Headline */}
-      <div className="bg-gradient-to-r from-slate-900 via-purple-950/40 to-slate-900 border border-purple-500/20 rounded-2xl p-6 shadow-xl backdrop-blur-md">
+      <div className="bg-gradient-to-l from-slate-900 via-purple-950/40 to-slate-900 border border-purple-500/20 rounded-2xl p-6 shadow-xl backdrop-blur-md">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-2">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/30">
+            <div className="inline-flex items-center space-x-reverse space-x-2 px-3 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-400 border border-purple-500/30">
               <Code2 className="w-3.5 h-3.5" />
-              <span>Sprint 14 — Enterprise Intelligence & Policy-as-Code</span>
+              <span>Sprint 14 — ذكاء المؤسسات والسياسات ككود (Policy-as-Code)</span>
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-              Policy-as-Code, Risk Graph & Enterprise Governance
+              السياسات البرمجية، رسم المخاطر والحوكمة المؤسسية
             </h1>
             <p className="text-sm text-slate-400 max-w-3xl leading-relaxed">
-              Transforming scattered security rules into a fully programmable, typed, linted, and cryptographically signed
-              policy toolchain. Enforcing multi-stage human approvals, ephemeral delegated execution, and supply-chain provenance.
+              تحويل القواعد المتفرقة إلى منظومة برمجية قابلة للترجمة والتدقيق والتوقيع التشفيري (Signed Policy Bundle)، مع فرض الموافقات متعددة المراحل، تفويض التنفيذ المؤقت، وتدقيق سلسلة توريد الأدوات.
             </p>
           </div>
 
@@ -393,10 +390,10 @@ spec:
             <button
               onClick={handleRunTests}
               disabled={isRunningTests}
-              className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25 transition-all disabled:opacity-50"
+              className="flex items-center space-x-reverse space-x-2 px-4 py-2 rounded-xl text-xs font-semibold bg-purple-600 hover:bg-purple-500 text-white shadow-lg shadow-purple-600/25 transition-all disabled:opacity-50 cursor-pointer"
             >
               <Play className={`w-3.5 h-3.5 ${isRunningTests ? "animate-spin" : ""}`} />
-              <span>{isRunningTests ? "Verifying..." : "Run Sprint 14 Tests (10/10)"}</span>
+              <span>{isRunningTests ? "جاري الفحص..." : "تشغيل اختبارات Sprint 14 (10/10)"}</span>
             </button>
           </div>
         </div>
@@ -404,58 +401,58 @@ spec:
         {/* Enterprise Metrics Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5 mt-6 pt-5 border-t border-slate-800/80 font-mono">
           <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-2.5">
-            <div className="text-[10px] text-slate-400">Signed Bundle</div>
+            <div className="text-[10px] text-slate-400 font-sans">الحزمة الموقعة</div>
             <div className="text-sm font-bold text-purple-400 mt-0.5 truncate">{activeBundle.version}</div>
             <div className="text-[9px] text-slate-500 truncate">{activeBundle.compiledHash.substring(0, 14)}...</div>
           </div>
 
           <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-2.5">
-            <div className="text-[10px] text-slate-400">Risk Graph Entities</div>
-            <div className="text-base font-bold text-cyan-400 mt-0.5">{graphData.nodes.length} Nodes</div>
-            <div className="text-[9px] text-slate-500">{graphData.edges.length} Edges Mapped</div>
+            <div className="text-[10px] text-slate-400 font-sans">عقد رسم المخاطر</div>
+            <div className="text-base font-bold text-cyan-400 mt-0.5">{graphData.nodes.length} عقدة</div>
+            <div className="text-[9px] text-slate-500 font-sans">{graphData.edges.length} رابط محدد</div>
           </div>
 
           <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-2.5">
-            <div className="text-[10px] text-slate-400">Topology Anomalies</div>
+            <div className="text-[10px] text-slate-400 font-sans">شذوذ أمني مكتشف</div>
             <div className={`text-base font-bold mt-0.5 ${riskAnomalies.length > 0 ? "text-rose-400" : "text-emerald-400"}`}>
-              {riskAnomalies.length} Critical
+              {riskAnomalies.length} حالة حرجة
             </div>
-            <div className="text-[9px] text-slate-500">Cross-Tenant Isolation</div>
+            <div className="text-[9px] text-slate-500 font-sans">عزل المستأجرين</div>
           </div>
 
           <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-2.5">
-            <div className="text-[10px] text-slate-400">Pending Approvals</div>
-            <div className="text-base font-bold text-amber-400 mt-0.5">{approvalRequests.length} Active</div>
-            <div className="text-[9px] text-slate-500">Dual-Sign-off Gated</div>
+            <div className="text-[10px] text-slate-400 font-sans">موافقات معلقة</div>
+            <div className="text-base font-bold text-amber-400 mt-0.5">{approvalRequests.length} نشطة</div>
+            <div className="text-[9px] text-slate-500 font-sans">بوابة الشخصين</div>
           </div>
 
           <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-2.5">
-            <div className="text-[10px] text-slate-400">Delegated Grants</div>
-            <div className="text-base font-bold text-emerald-400 mt-0.5">{grants.length} Scoped</div>
-            <div className="text-[9px] text-slate-500">Ephemeral Token TTL</div>
+            <div className="text-[10px] text-slate-400 font-sans">تفويضات مؤقتة</div>
+            <div className="text-base font-bold text-emerald-400 mt-0.5">{grants.length} تصريح</div>
+            <div className="text-[9px] text-slate-500 font-sans">مفاتيح لحظية TTL</div>
           </div>
 
           <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-2.5">
-            <div className="text-[10px] text-slate-400">Open Findings</div>
-            <div className="text-base font-bold text-rose-400 mt-0.5">{complianceSummary.openCount} Open</div>
-            <div className="text-[9px] text-slate-500">{complianceSummary.criticalCount} Critical / {complianceSummary.highCount} High</div>
+            <div className="text-[10px] text-slate-400 font-sans">ملاحظات الامتثال</div>
+            <div className="text-base font-bold text-rose-400 mt-0.5">{complianceSummary.openCount} مفتوحة</div>
+            <div className="text-[9px] text-slate-500 font-sans">{complianceSummary.criticalCount} حرجة / {complianceSummary.highCount} عالية</div>
           </div>
         </div>
       </div>
 
       {/* Sub-Navigation Tabs */}
-      <div className="flex overflow-x-auto space-x-2 border-b border-slate-800/80 pb-2 scrollbar-none">
+      <div className="flex overflow-x-auto space-x-reverse space-x-2 border-b border-slate-800/80 pb-2 scrollbar-none">
         {[
-          { id: "compiler", label: "Policy Compiler & Linter", icon: Code2 },
-          { id: "explainer", label: "Decision Explainer", icon: FileCheck2 },
-          { id: "simulation", label: "Pre-Flight Simulator", icon: GitBranch },
-          { id: "risk_graph", label: "Enterprise Risk Graph", icon: FolderTree },
-          { id: "approvals", label: "Multi-Stage Approvals", icon: Users },
-          { id: "delegation", label: "Delegated Execution", icon: Key },
-          { id: "supply_chain", label: "Tool Provenance", icon: Award },
-          { id: "federation", label: "Policy Inheritance", icon: Layers },
-          { id: "compliance", label: "Compliance Dashboard", icon: ShieldAlert },
-          { id: "tests", label: "Sprint 14 Verifications", icon: Play },
+          { id: "compiler", label: "مترجم ومدقق السياسات", icon: Code2 },
+          { id: "explainer", label: "مفسر قرارات السياسة", icon: FileCheck2 },
+          { id: "simulation", label: "محاكي ما قبل الإنتاج", icon: GitBranch },
+          { id: "risk_graph", label: "رسم بياني للمخاطر", icon: FolderTree },
+          { id: "approvals", label: "الموافقات متعددة المراحل", icon: Users },
+          { id: "delegation", label: "التفويض المحدود والمؤقت", icon: Key },
+          { id: "supply_chain", label: "أمان سلسلة التوريد", icon: Award },
+          { id: "federation", label: "حوكمة ووراثة السياسات", icon: Layers },
+          { id: "compliance", label: "لوحة الامتثال المؤسسي", icon: ShieldAlert },
+          { id: "tests", label: "فحص واختبارات Sprint 14", icon: Play },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeSection === tab.id;

@@ -521,12 +521,12 @@ export const RunSimulatorTab: React.FC<RunSimulatorTabProps> = ({
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-reverse space-x-2">
               <span className="text-xs uppercase font-semibold text-cyan-400 bg-cyan-950/60 border border-cyan-500/30 px-2 py-0.5 rounded">
-                Active Task · {task.id}
+                المهمة النشطة · {task.id}
               </span>
               <span className="text-xs text-slate-400">
-                Repo: <code className="text-slate-200">{currentRepo.fullName}</code> ({task.baseBranch})
+                المستودع: <code className="text-slate-200 font-mono">{currentRepo.fullName}</code> ({task.baseBranch})
               </span>
             </div>
             <h2 className="text-lg font-bold text-white tracking-tight">{task.title}</h2>
@@ -534,23 +534,23 @@ export const RunSimulatorTab: React.FC<RunSimulatorTabProps> = ({
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center space-x-2 shrink-0">
+          <div className="flex items-center space-x-reverse space-x-2 shrink-0">
             {run.status === "created" && (
               <>
                 <button
                   onClick={() => {
                     setIsAutoRunning(true);
                   }}
-                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-medium text-xs shadow-md shadow-indigo-500/20 flex items-center space-x-1.5 transition-all"
+                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white font-medium text-xs shadow-md shadow-indigo-500/20 flex items-center space-x-reverse space-x-1.5 transition-all cursor-pointer"
                 >
                   <Play className="w-4 h-4 fill-white" />
-                  <span>Start Autonomous Run</span>
+                  <span>بدء التشغيل الذاتي الكامل</span>
                 </button>
                 <button
                   onClick={startRun}
-                  className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-medium transition-all"
+                  className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-medium transition-all cursor-pointer"
                 >
-                  Step 1 (Queue)
+                  الخطوة 1 (طابور الانتظار)
                 </button>
               </>
             )}
@@ -560,46 +560,46 @@ export const RunSimulatorTab: React.FC<RunSimulatorTabProps> = ({
                 {steps.length === 1 && (
                   <button
                     onClick={executeStepReadFile}
-                    className="px-3.5 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-medium shadow flex items-center space-x-1.5"
+                    className="px-3.5 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-medium shadow flex items-center space-x-reverse space-x-1.5 cursor-pointer"
                   >
-                    <span>Execute Step 2: Read File</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
+                    <span>تنفيذ الخطوة 2: قراءة الملف</span>
+                    <ChevronRight className="w-3.5 h-3.5 rotate-180" />
                   </button>
                 )}
                 {steps.length === 2 && (
                   <button
                     onClick={executeStepApplyPatch}
-                    className="px-3.5 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-medium shadow flex items-center space-x-1.5"
+                    className="px-3.5 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white text-xs font-medium shadow flex items-center space-x-reverse space-x-1.5 cursor-pointer"
                   >
-                    <span>Execute Step 3: Apply Patch (Gated)</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
+                    <span>تنفيذ الخطوة 3: تطبيق التصحيح (بوابة موافقة)</span>
+                    <ChevronRight className="w-3.5 h-3.5 rotate-180" />
                   </button>
                 )}
                 {steps.length === 3 && steps[2].status === "succeeded" && (
                   <button
                     onClick={executeStepRunTests}
-                    className="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium shadow flex items-center space-x-1.5"
+                    className="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-medium shadow flex items-center space-x-reverse space-x-1.5 cursor-pointer"
                   >
-                    <span>Execute Step 4: Run Sandbox Tests</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
+                    <span>تنفيذ الخطوة 4: اختبارات البيئة المعزولة</span>
+                    <ChevronRight className="w-3.5 h-3.5 rotate-180" />
                   </button>
                 )}
                 {steps.length === 4 && (
                   <button
                     onClick={executeStepCreatePR}
-                    className="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium shadow flex items-center space-x-1.5"
+                    className="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium shadow flex items-center space-x-reverse space-x-1.5 cursor-pointer"
                   >
-                    <span>Execute Step 5: Publish PR</span>
-                    <ChevronRight className="w-3.5 h-3.5" />
+                    <span>تنفيذ الخطوة 5: نشر طلب السحب PR</span>
+                    <ChevronRight className="w-3.5 h-3.5 rotate-180" />
                   </button>
                 )}
 
                 <button
                   onClick={handleCancelRun}
-                  className="px-3 py-2 rounded-lg bg-rose-950/80 hover:bg-rose-900 border border-rose-800 text-rose-300 text-xs font-medium flex items-center space-x-1.5 transition-all"
+                  className="px-3 py-2 rounded-lg bg-rose-950/80 hover:bg-rose-900 border border-rose-800 text-rose-300 text-xs font-medium flex items-center space-x-reverse space-x-1.5 transition-all cursor-pointer"
                 >
                   <Ban className="w-3.5 h-3.5" />
-                  <span>Emergency Cancel</span>
+                  <span>إلغاء طارئ للتشغيل</span>
                 </button>
               </>
             )}
@@ -607,10 +607,10 @@ export const RunSimulatorTab: React.FC<RunSimulatorTabProps> = ({
             {(run.status === "succeeded" || run.status === "cancelled") && (
               <button
                 onClick={handleResetRun}
-                className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-medium flex items-center space-x-1.5 transition-all"
+                className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-medium flex items-center space-x-reverse space-x-1.5 transition-all cursor-pointer"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset Run</span>
+                <span>إعادة تعيين المحاكاة</span>
               </button>
             )}
           </div>

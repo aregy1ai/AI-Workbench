@@ -239,19 +239,18 @@ export const PerformanceOptimizationTab: React.FC<PerformanceOptimizationTabProp
   return (
     <div className="space-y-6 text-slate-100">
       {/* Top Banner / Headline */}
-      <div className="bg-gradient-to-r from-slate-900 via-amber-950/40 to-slate-900 border border-amber-500/20 rounded-2xl p-6 shadow-xl backdrop-blur-md">
+      <div className="bg-gradient-to-l from-slate-900 via-amber-950/40 to-slate-900 border border-amber-500/20 rounded-2xl p-6 shadow-xl backdrop-blur-md">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-2">
-            <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30">
+            <div className="inline-flex items-center space-x-reverse space-x-2 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30">
               <Zap className="w-3.5 h-3.5" />
-              <span>v2 Architecture: Performance, Speed & Efficiency Engine (§6.1 - §6.7)</span>
+              <span>معمارية الجيل الثاني: محرك الأداء الفائق والسرعة والفعالية (§6.1 - §6.7)</span>
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-              High-Velocity Execution & Perceived Latency Control
+              التنفيذ عالي السرعة وضبط أزمنة الاستجابة
             </h1>
             <p className="text-sm text-slate-400 max-w-3xl leading-relaxed">
-              Drastically reducing perceived latency via warm sandbox pools (&lt;3s), token-by-token streaming (&lt;1.5s TTFT),
-              parallel DAG tool resolution, prompt prefix caching, and parameterized composite index scans (&lt;10% RLS overhead).
+              تقليص زمن الاستجابة إلى أقصى حد عبر الحاويات الدافئة (&lt;3 ثوان)، بث الرموز اللحظي (&lt;1.5 ثانية للرمز الأول)، تنفيذ مخطط أدوات DAG المتوازي، كاش البادئة للتعليمات، ومسح الفهارس المركبة لـ RLS دون تجاوز 10% من العبء.
             </p>
           </div>
 
@@ -259,10 +258,10 @@ export const PerformanceOptimizationTab: React.FC<PerformanceOptimizationTabProp
             <button
               onClick={handleRunTests}
               disabled={isRunningTests}
-              className="flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white shadow-lg shadow-amber-600/25 transition-all disabled:opacity-50"
+              className="flex items-center space-x-reverse space-x-2 px-4 py-2 rounded-xl text-xs font-semibold bg-amber-600 hover:bg-amber-500 text-white shadow-lg shadow-amber-600/25 transition-all disabled:opacity-50 cursor-pointer"
             >
               <Play className={`w-3.5 h-3.5 ${isRunningTests ? "animate-spin" : ""}`} />
-              <span>{isRunningTests ? "Benchmarking..." : "Run Performance Suite (10/10)"}</span>
+              <span>{isRunningTests ? "جاري الفحص..." : "تشغيل اختبارات الأداء (10/10)"}</span>
             </button>
           </div>
         </div>
@@ -270,47 +269,47 @@ export const PerformanceOptimizationTab: React.FC<PerformanceOptimizationTabProp
         {/* 5 Core SLI Target Metrics Bar */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 mt-6 pt-5 border-t border-slate-800/80 font-mono">
           <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-2.5">
-            <div className="text-[10px] text-slate-400">SLI-1: Time to First Step</div>
-            <div className="text-base font-bold text-amber-400 mt-0.5">~180ms</div>
-            <div className="text-[9px] text-emerald-400">Target: &lt; 3.0s (Warm Pool)</div>
+            <div className="text-[10px] text-slate-400 font-sans">مؤشر 1: زمن الخطوة الأولى</div>
+            <div className="text-base font-bold text-amber-400 mt-0.5">~180 ملي ثانية</div>
+            <div className="text-[9px] text-emerald-400 font-sans">المستهدف: &lt; 3.0 ثوان (مسبح دافئ)</div>
           </div>
 
           <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-2.5">
-            <div className="text-[10px] text-slate-400">SLI-2: Time to First Token</div>
-            <div className="text-base font-bold text-cyan-400 mt-0.5">~480ms</div>
-            <div className="text-[9px] text-emerald-400">Target: &lt; 1.5s (SSE Stream)</div>
+            <div className="text-[10px] text-slate-400 font-sans">مؤشر 2: زمن الرمز الأول TTFT</div>
+            <div className="text-base font-bold text-cyan-400 mt-0.5">~480 ملي ثانية</div>
+            <div className="text-[9px] text-emerald-400 font-sans">المستهدف: &lt; 1.5 ثانية (بث SSE)</div>
           </div>
 
           <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-2.5">
-            <div className="text-[10px] text-slate-400">SLI-3: Worker Recovery</div>
+            <div className="text-[10px] text-slate-400 font-sans">مؤشر 3: استرداد العامل</div>
             <div className="text-base font-bold text-emerald-400 mt-0.5">100%</div>
-            <div className="text-[9px] text-slate-500">Outbox Durable State</div>
+            <div className="text-[9px] text-slate-500 font-sans">حالة دائمة Outbox</div>
           </div>
 
           <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-2.5">
-            <div className="text-[10px] text-slate-400">SLI-4: RLS Query Overhead</div>
+            <div className="text-[10px] text-slate-400 font-sans">مؤشر 4: عبء استعلامات RLS</div>
             <div className="text-base font-bold text-indigo-400 mt-0.5">~5.2%</div>
-            <div className="text-[9px] text-emerald-400">Target: &lt; 10.0% Overhead</div>
+            <div className="text-[9px] text-emerald-400 font-sans">المستهدف: &lt; 10.0%</div>
           </div>
 
           <div className="bg-slate-900/60 border border-slate-800/80 rounded-xl p-2.5">
-            <div className="text-[10px] text-slate-400">SLI-5: Sandbox Destroy</div>
-            <div className="text-base font-bold text-purple-400 mt-0.5">&lt; 1.0s Async</div>
-            <div className="text-[9px] text-emerald-400">Target: &lt; 5.0s Non-Blocking</div>
+            <div className="text-[10px] text-slate-400 font-sans">مؤشر 5: إتلاف الحاوية غير المتزامن</div>
+            <div className="text-base font-bold text-purple-400 mt-0.5">&lt; 1.0 ثانية</div>
+            <div className="text-[9px] text-emerald-400 font-sans">المستهدف: &lt; 5.0 ثوان</div>
           </div>
         </div>
       </div>
 
       {/* Sub-Navigation Tabs */}
-      <div className="flex overflow-x-auto space-x-2 border-b border-slate-800/80 pb-2 scrollbar-none">
+      <div className="flex overflow-x-auto space-x-reverse space-x-2 border-b border-slate-800/80 pb-2 scrollbar-none">
         {[
-          { id: "warm_pool", label: "Warm Pool & Snapshots", icon: Flame },
-          { id: "streaming", label: "Real-Time Streaming", icon: Radio },
-          { id: "parallel_tools", label: "Parallel Tool DAG", icon: Cpu },
-          { id: "db_optimizer", label: "DB & RLS Optimizer", icon: Database },
-          { id: "prompt_cache", label: "Prompt Cache & Routing", icon: Sparkles },
-          { id: "sli_scorecard", label: "Platform SLI Scorecard", icon: Gauge },
-          { id: "tests", label: "Automated Verifications", icon: Play },
+          { id: "warm_pool", label: "الحاويات الدافئة واللقطات", icon: Flame },
+          { id: "streaming", label: "البث اللحظي للرموز", icon: Radio },
+          { id: "parallel_tools", label: "مخطط الأدوات المتوازي DAG", icon: Cpu },
+          { id: "db_optimizer", label: "مُحسن قواعد البيانات وRLS", icon: Database },
+          { id: "prompt_cache", label: "كاش التعليمات والتوجيه الذكي", icon: Sparkles },
+          { id: "sli_scorecard", label: "بطاقة مؤشرات الأداء SLI", icon: Gauge },
+          { id: "tests", label: "الفحص الآلي والاختبارات", icon: Play },
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = activeSection === tab.id;
@@ -318,7 +317,7 @@ export const PerformanceOptimizationTab: React.FC<PerformanceOptimizationTabProp
             <button
               key={tab.id}
               onClick={() => setActiveSection(tab.id as SubSection)}
-              className={`flex items-center space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all ${
+              className={`flex items-center space-x-reverse space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
                 isActive
                   ? "bg-amber-500/10 text-amber-400 border border-amber-500/30 shadow-sm"
                   : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"

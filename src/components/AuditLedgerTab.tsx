@@ -67,38 +67,39 @@ export const AuditLedgerTab: React.FC<AuditLedgerTabProps> = ({
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-reverse space-x-2">
               <span className="text-xs uppercase font-semibold text-emerald-400 bg-emerald-950/60 border border-emerald-500/30 px-2 py-0.5 rounded">
-                Evidence Plane
+                مستوى الأدلة والإثبات (Evidence Plane)
               </span>
-              <span className="text-xs text-slate-400">Append-Only · SHA-256 Hash-Chained</span>
+              <span className="text-xs text-slate-400">سجل للإضافة فقط · سلسلة كتل مشفرة SHA-256</span>
             </div>
             <h2 className="text-lg font-bold text-white tracking-tight">
-              Tamper-Evident Audit Ledger & Cost Governance
+              سجل تدقيق غير قابل للتلاعب وحوكمة الميزانيات والنفقات
             </h2>
-            <p className="text-xs text-slate-400 max-w-3xl">
-              Unlike telemetry traces which can be sampled or discarded, the Audit Log is an immutable, append-only security record. Every state change, policy decision, approval, and secret lease issue is cryptographically chained using SHA-256.
+            <p className="text-xs text-slate-400 max-w-3xl leading-relaxed">
+              سجل التدقيق المؤسسي هو سجل أمني ثابت وغير قابل للتعديل. كل تغيير في الحالة، قرار سياسي، موافقة بشرية، أو تأجير سر مؤقت يتم ربطه بسلسلة كتل مشفرة عبر خوارزمية SHA-256.
             </p>
           </div>
 
-          <div className="flex items-center space-x-2 shrink-0">
+          <div className="flex items-center space-x-reverse space-x-2 shrink-0">
             <button
               onClick={handleVerify}
-              className="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs shadow flex items-center space-x-1.5 transition-all"
+              className="px-3.5 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-medium text-xs shadow flex items-center space-x-reverse space-x-1.5 transition-all cursor-pointer"
             >
               <ShieldCheck className="w-4 h-4" />
-              <span>Verify Cryptographic Chain</span>
+              <span>التحقق من سلامة السلسلة التشفيرية</span>
             </button>
             <button
               onClick={handleSimulateTamper}
-              className="px-3 py-2 rounded-lg bg-rose-950 hover:bg-rose-900 border border-rose-800 text-rose-300 font-medium text-xs flex items-center space-x-1.5 transition-all"
+              className="px-3 py-2 rounded-lg bg-rose-950 hover:bg-rose-900 border border-rose-800 text-rose-300 font-medium text-xs flex items-center space-x-reverse space-x-1.5 transition-all cursor-pointer"
             >
               <AlertTriangle className="w-3.5 h-3.5" />
-              <span>Simulate Tampering</span>
+              <span>محاكاة محاولة تلاعب</span>
             </button>
             <button
               onClick={handleResetTamper}
-              className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium"
+              className="px-3 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium cursor-pointer"
+              title="إعادة تعيين الحالة الأصلية"
             >
               <RotateCcw className="w-3.5 h-3.5" />
             </button>
@@ -114,7 +115,7 @@ export const AuditLedgerTab: React.FC<AuditLedgerTabProps> = ({
                 : "bg-rose-950/60 border-rose-600 text-rose-300 animate-pulse"
             }`}
           >
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-reverse space-x-2">
               {verificationResult.intact ? (
                 <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
               ) : (
@@ -123,7 +124,7 @@ export const AuditLedgerTab: React.FC<AuditLedgerTabProps> = ({
               <span className="font-semibold">{verificationResult.message}</span>
             </div>
             <span className="font-mono text-[10px] text-slate-400">
-              Verified at {new Date().toLocaleTimeString()}
+              تم الفحص في {new Date().toLocaleTimeString("ar-EG")}
             </span>
           </div>
         )}
@@ -132,45 +133,45 @@ export const AuditLedgerTab: React.FC<AuditLedgerTabProps> = ({
       {/* Audit Events Table */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-sm">
         <div className="p-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-reverse space-x-2">
             <Hash className="w-4 h-4 text-cyan-400" />
             <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-              Cryptographic Audit Chain ({filteredEvents.length} Events)
+              سلسلة التدقيق التشفيرية ({filteredEvents.length} حدث مسجل)
             </h3>
           </div>
 
-          <div className="flex items-center space-x-2 text-xs">
-            <span className="text-slate-400">Filter:</span>
+          <div className="flex items-center space-x-reverse space-x-2 text-xs">
+            <span className="text-slate-400">تصفية الأحداث:</span>
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
               className="bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-slate-300 text-xs focus:outline-none"
             >
-              <option value="all">All Events</option>
-              <option value="tool.call">Tool Calls</option>
-              <option value="policy.decision">Policy Decisions</option>
-              <option value="approval">Human Approvals</option>
-              <option value="run.cancelled">Cancellations</option>
+              <option value="all">كافة الأحداث المسجلة</option>
+              <option value="tool.call">استدعاء الأدوات (Tool Calls)</option>
+              <option value="policy.decision">قرارات السياسات (Policy Decisions)</option>
+              <option value="approval">الموافقات البشرية (Human Approvals)</option>
+              <option value="run.cancelled">الإلغاءات الطارئة (Cancellations)</option>
             </select>
           </div>
         </div>
 
         {filteredEvents.length === 0 ? (
           <div className="p-10 text-center text-slate-500 text-xs">
-            No audit records registered yet. Execute actions in the Run Simulator or Tool Gateway to generate tamper-evident records.
+            لا توجد سجلات تدقيق حتى الآن. نفّذ عمليات في محاكي التشغيل أو بوابة الأدوات لتوليد سجلات غير قابلة للتلاعب.
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 text-[11px] uppercase tracking-wider font-mono">
+            <table className="w-full text-right text-xs">
+              <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 text-[11px] font-sans">
                 <tr>
-                  <th className="px-4 py-3">Seq #</th>
-                  <th className="px-4 py-3">Event Type</th>
-                  <th className="px-4 py-3">Actor</th>
-                  <th className="px-4 py-3">Payload Summary</th>
-                  <th className="px-4 py-3">Previous Hash Link</th>
-                  <th className="px-4 py-3">Event Hash</th>
-                  <th className="px-4 py-3">Timestamp</th>
+                  <th className="px-4 py-3">التسلسل #</th>
+                  <th className="px-4 py-3">نوع الحدث</th>
+                  <th className="px-4 py-3">الفاعل (Actor)</th>
+                  <th className="px-4 py-3">ملخص الحمولة</th>
+                  <th className="px-4 py-3">رابط الهاش السابق</th>
+                  <th className="px-4 py-3">هاش الحدث SHA-256</th>
+                  <th className="px-4 py-3">التوقيت</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">

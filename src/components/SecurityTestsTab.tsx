@@ -180,33 +180,33 @@ export const SecurityTestsTab: React.FC<SecurityTestsTabProps> = ({
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-reverse space-x-2">
               <span className="text-xs uppercase font-semibold text-cyan-400 bg-cyan-950/60 border border-cyan-500/30 px-2 py-0.5 rounded">
-                Sprint 1 Verification Gate
+                بوابة التحقق الأمني الأولى
               </span>
-              <span className="text-xs text-slate-400">Strict Tenant Isolation & Security Tests</span>
+              <span className="text-xs text-slate-400">عزل المستأجرين الصارم واختبارات الأمان RLS</span>
             </div>
             <h2 className="text-lg font-bold text-white tracking-tight">
-              Security Test Suite & Row-Level Security (RLS) Engine
+              حزمة اختبارات الأمان ومحرك عزل مستوى الصفوف (Row-Level Security)
             </h2>
-            <p className="text-xs text-slate-400 max-w-3xl">
-              Verification of mandatory Sprint 1 security constraints: cross-tenant read/write prevention, nonce replay defense, stale cancellation epoch invalidation, and database-level FORCE ROW LEVEL SECURITY.
+            <p className="text-xs text-slate-400 max-w-3xl leading-relaxed">
+              التحقق من القيود الأمنية الصارمة: منع القراءة والكتابة عبر المستأجرين الآخرين، حماية إعادة استخدام المعرفات العشوائية (Nonce Replay Defense)، إبطال حقبة الإلغاء، وفرض سياسات FORCE ROW LEVEL SECURITY على مستوى قاعدة بيانات PostgreSQL.
             </p>
           </div>
 
           <button
             onClick={handleRunTests}
-            className="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-xs shadow flex items-center space-x-1.5 transition-all shrink-0"
+            className="px-4 py-2 rounded-lg bg-cyan-600 hover:bg-cyan-500 text-white font-medium text-xs shadow flex items-center space-x-reverse space-x-1.5 transition-all shrink-0 cursor-pointer"
           >
             <Play className="w-3.5 h-3.5 fill-white" />
-            <span>Re-run Security Tests ({testReports.length})</span>
+            <span>إعادة تشغيل اختبارات الأمان ({testReports.length})</span>
           </button>
         </div>
 
         {/* Status indicator */}
         <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
-          <div className="flex items-center space-x-2">
-            <span className="text-slate-400 font-medium">Sprint 1 Status:</span>
+          <div className="flex items-center space-x-reverse space-x-2">
+            <span className="text-slate-400 font-medium">حالة الفحص الأمني:</span>
             <span
               className={`px-2 py-0.5 rounded font-semibold font-mono text-[11px] ${
                 allPassed
@@ -214,26 +214,26 @@ export const SecurityTestsTab: React.FC<SecurityTestsTabProps> = ({
                   : "bg-rose-950 text-rose-400 border border-rose-700"
               }`}
             >
-              {allPassed ? "100% GATE ASSERTIONS PASSED" : "GATE CHECK FAILED"}
+              {allPassed ? "تم اجتياز 100% من معايير البوابة بنجاح" : "فشل في فحص البوابة"}
             </span>
           </div>
           <span className="text-slate-500 font-mono text-[11px]">
-            {testReports.filter((t) => t.passed).length}/{testReports.length} Passing
+            {testReports.filter((t) => t.passed).length}/{testReports.length} اختبار ناجح
           </span>
         </div>
       </div>
 
       {/* Sprint 1 Gate Checklist Box */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm space-y-3">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-2">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-reverse space-x-2">
           <CheckSquare className="w-4 h-4 text-emerald-400" />
-          <span>Sprint 1 Completion Gate Checklist</span>
+          <span>قائمة معايير اكتمال الأمان والعزل المؤسسي</span>
         </h3>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
           {gateChecklist.map((item, idx) => (
             <div
               key={idx}
-              className="flex items-center space-x-2.5 p-2 rounded bg-slate-950 border border-slate-800/80"
+              className="flex items-center space-x-reverse space-x-2.5 p-2 rounded bg-slate-950 border border-slate-800/80"
             >
               <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
               <span className="text-slate-300">{item.label}</span>
@@ -244,9 +244,9 @@ export const SecurityTestsTab: React.FC<SecurityTestsTabProps> = ({
 
       {/* Test Reports List */}
       <div className="space-y-3">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-2">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-400 flex items-center space-x-reverse space-x-2">
           <ShieldCheck className="w-4 h-4 text-cyan-400" />
-          <span>Security Assertion Results ({testReports.length})</span>
+          <span>نتائج الفحوصات والتأكيدات الأمنية ({testReports.length})</span>
         </h3>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

@@ -11,6 +11,7 @@ import { ContinuousImprovementTab } from "./components/ContinuousImprovementTab"
 import { AutonomousOperationsTab } from "./components/AutonomousOperationsTab";
 import { EnterprisePolicyTab } from "./components/EnterprisePolicyTab";
 import { OpsControlCenterTab } from "./components/OpsControlCenterTab";
+import { PerformanceOptimizationTab } from "./components/PerformanceOptimizationTab";
 import { CodeExplorerTab } from "./components/CodeExplorerTab";
 import { SAMPLE_TENANTS } from "./data/mockData";
 import { TenantInfo } from "./types";
@@ -29,6 +30,7 @@ import {
   Bot,
   Code2,
   Flame,
+  Zap,
 } from "lucide-react";
 
 export default function App() {
@@ -37,6 +39,7 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<
     | "ops_center"
     | "enterprise_policy"
+    | "performance"
     | "engine"
     | "simulator"
     | "tools"
@@ -105,6 +108,18 @@ export default function App() {
             >
               <Code2 className="w-4 h-4" />
               <span>السياسات البرمجية والحوكمة (Sprint 14)</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("performance")}
+              className={`flex items-center space-x-reverse space-x-2 px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-all cursor-pointer ${
+                activeTab === "performance"
+                  ? "bg-amber-500/15 text-amber-300 border border-amber-500/30 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+              }`}
+            >
+              <Zap className="w-4 h-4 text-amber-400" />
+              <span>السرعة والأداء الفائق (Performance v2)</span>
             </button>
 
             <button
@@ -238,6 +253,10 @@ export default function App() {
 
         {activeTab === "enterprise_policy" && (
           <EnterprisePolicyTab currentTenant={currentTenant} />
+        )}
+
+        {activeTab === "performance" && (
+          <PerformanceOptimizationTab currentTenant={currentTenant} />
         )}
 
         {activeTab === "engine" && (

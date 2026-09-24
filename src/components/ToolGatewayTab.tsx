@@ -233,49 +233,49 @@ export const ToolGatewayTab: React.FC<ToolGatewayTabProps> = ({
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-reverse space-x-2">
               <span className="text-xs uppercase font-semibold text-amber-400 bg-amber-950/60 border border-amber-500/30 px-2 py-0.5 rounded">
-                Sprint 4 — Tool Gateway & Policy Engine
+                المرحلة 4 — بوابة الأدوات ومحرك السياسات
               </span>
-              <span className="text-xs text-slate-400">17-Step Zero-Trust Execution Pipeline</span>
+              <span className="text-xs text-slate-400">مسار تنفيذ انعدام الثقة (Zero-Trust) المكون من 17 خطوة</span>
             </div>
             <h2 className="text-lg font-bold text-white tracking-tight">
-              Policy Evaluation, Human Approval, Secret Broker & Redaction Matrix
+              تقييم السياسات، الموافقة البشرية، وسيط الأسرار ومصفوفة حجب البيانات الحساسة
             </h2>
-            <p className="text-xs text-slate-400 max-w-3xl">
-              Agents never access external APIs directly. Every request is mediated by the Tool Gateway with signed contexts, nonce replay defense, scoped ephemeral secret leases, and automatic output redaction.
+            <p className="text-xs text-slate-400 max-w-3xl leading-relaxed">
+              لا يصل الوكلاء إلى واجهات البرمجة الخارجية مباشرة أبداً. كل طلب يمر عبر بوابة الأدوات بسياق موقع تشفيرياً، حماية إعادة استخدام المعرفات، عقود أسرار لحظية، وحجب تلقائي للبيانات الحساسة.
             </p>
           </div>
 
           <button
             onClick={handleRunSecurityTests}
             disabled={testingRunning}
-            className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-medium text-xs shadow flex items-center space-x-1.5 transition-all shrink-0"
+            className="px-4 py-2 rounded-lg bg-amber-600 hover:bg-amber-500 text-white font-medium text-xs shadow flex items-center space-x-reverse space-x-1.5 transition-all shrink-0 cursor-pointer"
           >
             <Play className="w-3.5 h-3.5 fill-white" />
-            <span>{testingRunning ? "Running Suite..." : `Run Gateway Security Tests (${testResults.length})`}</span>
+            <span>{testingRunning ? "جاري الفحص..." : `تشغيل اختبارات أمان البوابة (${testResults.length})`}</span>
           </button>
         </div>
 
         {/* Gate Status Pill */}
         <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
-          <div className="flex items-center space-x-2">
-            <span className="text-slate-400 font-medium">Sprint 4 Gate Status:</span>
+          <div className="flex items-center space-x-reverse space-x-2">
+            <span className="text-slate-400 font-medium">حالة بوابة التحقق:</span>
             <span className="px-2 py-0.5 rounded font-semibold font-mono text-[11px] bg-emerald-950 text-emerald-400 border border-emerald-700">
-              18/18 GATE CRITERIA SATISFIED
+              18/18 معيار تم اجتيازه بنجاح
             </span>
           </div>
           <span className="text-slate-500 font-mono text-[11px]">
-            {testResults.filter((t) => t.passed).length}/{testResults.length} Gateway Security Tests Passed
+            {testResults.filter((t) => t.passed).length}/{testResults.length} اختبار أمان ناجح للبوابة
           </span>
         </div>
       </div>
 
       {/* 18-Point Gate Checklist */}
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-5 shadow-sm space-y-3">
-        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-2">
+        <h3 className="text-sm font-bold uppercase tracking-wider text-slate-300 flex items-center space-x-reverse space-x-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-          <span>Sprint 4 Verification Gate Checklist (18 Requirements)</span>
+          <span>قائمة معايير اكتمال بوابة الأدوات والسياسات (18 متطلباً)</span>
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
           {sprint4GateItems.map((item, idx) => (

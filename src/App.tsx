@@ -12,6 +12,7 @@ import { AutonomousOperationsTab } from "./components/AutonomousOperationsTab";
 import { EnterprisePolicyTab } from "./components/EnterprisePolicyTab";
 import { OpsControlCenterTab } from "./components/OpsControlCenterTab";
 import { PerformanceOptimizationTab } from "./components/PerformanceOptimizationTab";
+import { LLMWorkbenchTab } from "./components/LLMWorkbenchTab";
 import { CodeExplorerTab } from "./components/CodeExplorerTab";
 import { SAMPLE_TENANTS } from "./data/mockData";
 import { TenantInfo } from "./types";
@@ -31,12 +32,14 @@ import {
   Code2,
   Flame,
   Zap,
+  Sparkles,
 } from "lucide-react";
 
 export default function App() {
   const [tenants] = useState<TenantInfo[]>(SAMPLE_TENANTS);
   const [currentTenant, setCurrentTenant] = useState<TenantInfo>(SAMPLE_TENANTS[0]);
   const [activeTab, setActiveTab] = useState<
+    | "llm_workbench"
     | "ops_center"
     | "enterprise_policy"
     | "performance"
@@ -50,7 +53,7 @@ export default function App() {
     | "audit"
     | "security"
     | "code"
-  >("ops_center");
+  >("llm_workbench");
 
   // Metrics trigger for header updates
   const [metricsRevision, setMetricsRevision] = useState(0);
@@ -85,6 +88,19 @@ export default function App() {
       <nav className="bg-slate-900/80 border-b border-slate-800 backdrop-blur sticky top-16 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-reverse space-x-1 sm:space-x-2 overflow-x-auto py-2">
+            <button
+              onClick={() => setActiveTab("llm_workbench")}
+              className={`flex items-center space-x-reverse space-x-2 px-3.5 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                activeTab === "llm_workbench"
+                  ? "bg-indigo-500/20 text-indigo-300 border border-indigo-500/40 shadow-sm"
+                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+              }`}
+            >
+              <Sparkles className="w-4 h-4 text-indigo-400" />
+              <span>منصة حوكمة العمليات (LLM Workbench)</span>
+              <span className="px-1.5 py-0.2 rounded text-[10px] bg-indigo-500/20 text-indigo-300 font-mono">MIT</span>
+            </button>
+
             <button
               onClick={() => setActiveTab("ops_center")}
               className={`flex items-center space-x-reverse space-x-2 px-3.5 py-2 rounded-lg text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
@@ -247,6 +263,10 @@ export default function App() {
 
       {/* Main Content Area */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {activeTab === "llm_workbench" && (
+          <LLMWorkbenchTab currentTenant={currentTenant} />
+        )}
+
         {activeTab === "ops_center" && (
           <OpsControlCenterTab currentTenant={currentTenant} />
         )}

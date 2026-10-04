@@ -117,13 +117,13 @@ export function runTechnicalDebtGateTestSuite(): TestResult[] {
         JSON.stringify(first) === JSON.stringify(second),
         "Identical scorer inputs must produce identical output",
       );
-      assert(first.debtScore === 101.5272, `Unexpected debt score: ${first.debtScore}`);
+      assert(first.debtScore === 101.5708, `Unexpected debt score: ${first.debtScore}`);
 
       results.push({
         name: "3. Deterministic scorer produces replayable Debt Score",
         passed: true,
         durationMs: Date.now() - start,
-        details: `Debt Score = ${first.debtScore}`,
+        details: `Debt Score = ${first.debtScore} | High severity weight = 0.90`,
       });
     } catch (error) {
       results.push({

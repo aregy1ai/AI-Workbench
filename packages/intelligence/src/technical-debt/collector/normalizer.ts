@@ -131,10 +131,14 @@ export function normalizeSarif(
             severity: mapLevel(result?.level),
             message: result?.message?.text ?? "",
             properties: result?.properties ?? {},
-            invocation: {
+            provenance: {
+              tool: toolName,
+              toolVersion,
               configDigest: envelope.invocation.configDigest,
               ruleSet: envelope.invocation.ruleSet ?? null,
               databaseVersion: envelope.invocation.databaseVersion ?? null,
+              rawOutputDigest: envelope.rawOutputDigest ?? null,
+              executionEnvelopeDigest: envelope.executionEnvelopeDigest ?? null,
             },
           },
         }),

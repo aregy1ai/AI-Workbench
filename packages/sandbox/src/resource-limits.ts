@@ -13,6 +13,8 @@ export const RESOURCE_LIMITS = {
 };
 
 export const ALLOWED_EXECUTABLES = new Set([
+  // Build/test/runtime commands
+  "bun",
   "git",
   "node",
   "npm",
@@ -22,6 +24,18 @@ export const ALLOWED_EXECUTABLES = new Set([
   "go",
   "cargo",
   "mvn",
+
+  // Approved TDI analyzers
+  "codeql",
+  "semgrep",
+  "osv-scanner",
+  "trivy",
+  "actionlint",
+  "depcruise",
+  "knip",
+  "scorecard",
+  "syft",
+  "gitleaks",
 ]);
 
 export interface SandboxCommand {
@@ -52,5 +66,13 @@ export function validateCommand(command: SandboxCommand): void {
 
   if (command.maxOutputBytes > RESOURCE_LIMITS.MAX_OUTPUT_BYTES) {
     throw new Error("COMMAND_OUTPUT_TOO_LARGE");
+  }
+
+  if (command.timeoutMs <= 0) {
+    throw new Error("COMMAND_TIMEOUT_INVALID");
+  }
+
+  if (command.maxOutputBytes <= 0) {
+    throw new Error("COMMAND_OUTPUT_LIMIT_INVALID");
   }
 }

@@ -17,7 +17,7 @@
     "osv-scanner": {
       "tier": "A",
       "version": "2.6.0",
-      "image": "ghcr.io/google/osv-scanner:v2.6.0@sha256:afd838850ac1a8af4a23d3b5b4f0e3a5cf62e7c2a0fda0f9d5b1b4eb3a4f4f1",
+      "image": "ghcr.io/google/osv-scanner:v2.6.0@sha256:afd838850ac1a0fcc15ff4a041dc9ba11123c3f0d2666217a5f0fcf9222b55fa",
       "notes": "Image reference is intended to be replaced with the exact registry digest verified during adoption."
     },
     "trivy": {

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "tdi-tool-manifest-v1",
+  "date": "2026-10-04",
+  "tools": {
+    "codeql": {
+      "tier": "A",
+      "version": "2.27.1",
+      "execution": "github-codeql-action-v4",
+      "source": "GitHub CodeQL bundle",
+      "notes": "CodeQL Action v4.38.2 currently defaults to bundle 2.27.1."
+    },
+    "semgrep": {
+      "tier": "A",
+      "version": "1.179.0",
+      "image": "semgrep/semgrep:1.179.0"
+    },
+    "osv-scanner": {
+      "tier": "A",
+      "version": "2.6.0",
+      "image": "ghcr.io/google/osv-scanner:v2.6.0@sha256:afd838850ac1a8af4a23d3b5b4f0e3a5cf62e7c2a0fda0f9d5b1b4eb3a4f4f1",
+      "notes": "Image reference is intended to be replaced with the exact registry digest verified during adoption."
+    },
+    "trivy": {
+      "tier": "A",
+      "version": "0.74.0",
+      "image": "ghcr.io/aquasecurity/trivy:0.74.0@sha256:ee940acbf1f58ebadb42d01434ce4609530bf1b52536afbd1eee66cd7123c5c9"
+    },
+    "actionlint": {
+      "tier": "A",
+      "version": "1.7.12",
+      "image": "rhysd/actionlint:1.7.12@sha256:9d36088643581e728c969f35141f88139fec77280b2be23c1f66f8e40e1025e7"
+    },
+    "dependency-cruiser": {
+      "tier": "A",
+      "version": "18.1.0",
+      "execution": "bunx pinned package"
+    },
+    "knip": {
+      "tier": "A",
+      "version": "6.31.0",
+      "execution": "bunx pinned package"
+    },
+    "scorecard": {
+      "tier": "B",
+      "version": "5.5.0",
+      "image": "ghcr.io/ossf/scorecard:v5.5.0"
+    },
+    "syft": {
+      "tier": "B",
+      "version": "1.54.0",
+      "image": "anchore/syft:1.54.0"
+    },
+    "gitleaks": {
+      "tier": "B",
+      "version": "8.30.1",
+      "image": "ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:b109bc5f8f76a38196a3e413704fc5b9e3c32360bce4e4b603bd6f45b3721dbb",
+      "notes": "Linux amd64 image digest."
+    }
+  }
+}

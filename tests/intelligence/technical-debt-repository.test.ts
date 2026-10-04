@@ -48,7 +48,7 @@ export async function runTechnicalDebtRepositoryTestSuite(): Promise<{
           path: "src/value.ts",
           blobSha: "a".repeat(40),
           content: fileContent,
-          contentDigest: "sha256:5c7bd2c6e2be1e59569ae7fc6b5bb6f49c7c4d7d9d5f5c9c9ddccb0f2c5f0fbb",
+          contentDigest: "sha256:2496df5f88b82a3a0dcd34e29ce9bdafe95fd15da04695c3cd99f74fac55e761",
         };
       },
     };
@@ -57,9 +57,6 @@ export async function runTechnicalDebtRepositoryTestSuite(): Promise<{
     const evidence = await collector.collect(source);
 
     if (evidence.length !== 1) throw new Error("expected one repository evidence");
-    if (evidence[0].contentDigest !== provider.readFile ? "" : evidence[0].contentDigest) {
-      // no-op; exact digest assertion is made below against the provider result
-    }
     if (!/^sha256:[0-9a-f]{64}$/.test(evidence[0].contentDigest)) {
       throw new Error("contentDigest is not SHA-256");
     }

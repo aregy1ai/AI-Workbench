@@ -1,9 +1,6 @@
 /**
- * Eagle TDI v1 - Deterministic Gate Decision Contract
- *
- * This is an output of policy evaluation, never of the AI analyzer.
+ * Eagle TDI v1 - Deterministic Gate Decision Contract.
  */
-
 export type DebtGateDecision = "PASS" | "REVIEW" | "BLOCK";
 
 export interface DebtGateDecisionRecord {
@@ -17,11 +14,15 @@ export interface DebtGateDecisionRecord {
   reasonCode: string;
   reason: string;
 
+  /** Deterministic fingerprint of the decision inputs and policy. */
+  decisionFingerprint: string;
+
+  /** Operational timestamp; never used as a scoring/policy input. */
   decidedAt: string;
 }
 
 export function validateDebtGateDecision(
-  decision: DebtGateDecisionRecord
+  decision: DebtGateDecisionRecord,
 ): void {
   if (!/^DEC-[A-Za-z0-9][A-Za-z0-9._-]*$/.test(decision.id)) {
     throw new Error("DECISION_ID_INVALID");
@@ -37,5 +38,8 @@ export function validateDebtGateDecision(
   }
   if (!decision.reasonCode.trim()) {
     throw new Error("DECISION_REASON_CODE_REQUIRED");
+  }
+  if (!/^sha256:[0-9a-f]{64}$/.test(decision.decisionFingerprint)) {
+    throw new Error("DECISION_FINGERPRINT_INVALID");
   }
 }

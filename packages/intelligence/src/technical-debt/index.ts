@@ -10,5 +10,6 @@ export * from "./collector/canonical-json";
 export * from "./collector/digest";
 export * from "./collector/types";
 export * from "./collector/normalizer";
+export * from "./collector/specialized-normalizers";
 export * from "./collector/registry";
 export * from "./collector/tool-registry";

@@ -1,5 +1,5 @@
 import { Evidence } from "../contracts/evidence";
-import { TestRunResult, parseJUnitXml } from "../../../test-runner/src/reports";
+import { TestRunResult, parseJUnitXml } from "../../../../test-runner/src/reports";
 import { digestJson, deterministicEvidenceId } from "./digest";
 import { PinnedSource } from "./types";
 

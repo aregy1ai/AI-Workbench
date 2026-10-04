@@ -27,7 +27,7 @@ export interface DebtMetrics {
 const SEVERITY_WEIGHT: Record<FindingSeverity, number> = {
   low: 0.25,
   medium: 0.50,
-  high: 0.75,
+  high: 0.90,
   critical: 1.00,
 };
 

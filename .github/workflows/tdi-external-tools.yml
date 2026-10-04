@@ -1,0 +1,163 @@
+name: TDI External Tool Verification
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [tdi-v1-foundation]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Run and normalize TDI analyzers
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2.2.0
+        with:
+          bun-version: 1.4.2
+
+      - name: Install locked dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Prepare result directory
+        run: mkdir -p tdi-live-results/codeql
+
+      - name: CodeQL init
+        uses: github/codeql-action/init@v4.38.2
+        with:
+          languages: javascript-typescript
+          queries: security-extended
+
+      - name: CodeQL analyze
+        uses: github/codeql-action/analyze@v4.38.2
+        with:
+          upload: never
+          output: ./tdi-live-results/codeql
+
+      - name: Semgrep
+        shell: bash
+        run: |
+          set +e
+          docker run --rm \
+            -v "${PWD}:/src:ro" \
+            -v "${PWD}/tdi-live-results:/out:rw" \
+            semgrep/semgrep:1.179.0 \
+            semgrep scan --sarif --output /out/semgrep.sarif --config auto /src
+          code=$?
+          echo "$code" > tdi-live-results/semgrep.exit
+          exit 0
+
+      - name: OSV-Scanner
+        shell: bash
+        run: |
+          set +e
+          docker run --rm \
+            -v "${PWD}:/src:ro" \
+            -v "${PWD}/tdi-live-results:/out:rw" \
+            ghcr.io/google/osv-scanner:v2.6.0@sha256:afd838850ac1a0fcc15ff4a041dc9ba11123c3f0d2666217a5f0fcf9222b55fa \
+            scan source -r --format sarif --output-file /out/osv.sarif /src
+          code=$?
+          echo "$code" > tdi-live-results/osv.exit
+          exit 0
+
+      - name: Trivy
+        shell: bash
+        run: |
+          set +e
+          docker run --rm \
+            -v "${PWD}:/src:ro" \
+            -v "${PWD}/tdi-live-results:/out:rw" \
+            ghcr.io/aquasecurity/trivy:0.74.0@sha256:ee940acbf1f58ebadb42d01434ce4609530bf1b52536afbd1eee66cd7123c5c9 \
+            fs --format sarif --output /out/trivy.sarif /src
+          code=$?
+          echo "$code" > tdi-live-results/trivy.exit
+          exit 0
+
+      - name: actionlint
+        shell: bash
+        run: |
+          set +e
+          docker run --rm \
+            -v "${PWD}:/repo:ro" \
+            -w /repo \
+            rhysd/actionlint:1.7.12@sha256:9d36088643581e728c969f35141f88139fec77280b2be23c1f66f8e40e1025e7 \
+            -format '{{json .}}' > tdi-live-results/actionlint.json
+          code=$?
+          echo "$code" > tdi-live-results/actionlint.exit
+          exit 0
+
+      - name: dependency-cruiser
+        shell: bash
+        run: |
+          set +e
+          bunx dependency-cruiser@18.1.0 . --output-type json > tdi-live-results/dependency-cruiser.json
+          code=$?
+          echo "$code" > tdi-live-results/dependency-cruiser.exit
+          exit 0
+
+      - name: Knip
+        shell: bash
+        run: |
+          set +e
+          bunx knip@6.31.0 --reporter json > tdi-live-results/knip.json
+          code=$?
+          echo "$code" > tdi-live-results/knip.exit
+          exit 0
+
+      - name: OpenSSF Scorecard
+        shell: bash
+        run: |
+          set +e
+          docker run --rm \
+            -v "${PWD}:/src:ro" \
+            -v "${PWD}/tdi-live-results:/out:rw" \
+            ghcr.io/ossf/scorecard:v5.5.0 \
+            --local=/src --format=json > tdi-live-results/scorecard.json
+          code=$?
+          echo "$code" > tdi-live-results/scorecard.exit
+          exit 0
+
+      - name: Syft
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL \
+            https://github.com/anchore/syft/releases/download/v1.54.0/syft_1.54.0_linux_amd64.tar.gz \
+            -o /tmp/syft.tgz
+          echo "54a87372498168b2d033e876fd41fa4e8035b872699e525a57046e1f2f09c860  /tmp/syft.tgz" | sha256sum -c -
+          tar -xzf /tmp/syft.tgz -C /tmp syft
+          /tmp/syft /src -o spdx-json > tdi-live-results/syft.json
+
+      - name: Gitleaks
+        shell: bash
+        run: |
+          set +e
+          docker run --rm \
+            -v "${PWD}:/src:ro" \
+            -v "${PWD}/tdi-live-results:/out:rw" \
+            ghcr.io/gitleaks/gitleaks:v8.30.1@sha256:b109bc5f8f76a38196a3e413704fc5b9e3c32360bce4e4b603bd6f45b3721dbb \
+            detect --source /src --report-format json --report-path /out/gitleaks.json --redact
+          code=$?
+          echo "$code" > tdi-live-results/gitleaks.exit
+          exit 0
+
+      - name: Verify and normalize live outputs
+        run: bun run tdi:verify-live
+
+      - name: Upload TDI raw and normalized evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tdi-live-evidence-${{ github.sha }}
+          path: tdi-live-results
+          if-no-files-found: error

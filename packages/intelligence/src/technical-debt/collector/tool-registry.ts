@@ -111,9 +111,9 @@ export const TDI_TOOLCHAIN: readonly ToolDefinition[] = [
     outputFormat: "json",
     purpose: "Repository and supply-chain security posture",
     executable: "scorecard",
-    buildCommands: () => [{
+    buildCommands: (root) => [{
       executable: "scorecard",
-      args: ["--format", "json"],
+      args: ["--local=" + root, "--format=json"],
       outputTarget: "stdout",
     }],
   },
@@ -133,7 +133,7 @@ export const TDI_TOOLCHAIN: readonly ToolDefinition[] = [
   {
     id: "gitleaks",
     tier: "B",
-    version: "PIN_AT_ADOPTION",
+    version: "8.30.1",
     outputFormat: "json",
     purpose: "Secret detection including history-aware scans",
     executable: "gitleaks",

@@ -23,3 +23,5 @@ export * from "./collector/ci";
 export * from "./collector/tests";
 export * from "./collector/sandbox-executor";
 export * from "./source/github-history";
+
+export * from "./collector/pipeline";

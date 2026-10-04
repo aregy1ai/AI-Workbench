@@ -10,13 +10,21 @@ export const TDI_TOOLCHAIN: readonly ToolDefinition[] = [
     executable: "codeql",
     licenseNote:
       "Automated CI/CD use is subject to GitHub CodeQL licensing/plan terms; enable only when permitted.",
-    buildArgs: (root, outputFile) => [
-      "database",
-      "analyze",
-      "--format=sarif-latest",
-      "--output=" + outputFile,
-      root,
-    ],
+    buildCommands: (root, outputFile) => {
+      const database = outputFile + ".codeql-db";
+      return [
+        {
+          executable: "codeql",
+          args: ["database", "create", database, "--language=javascript-typescript", "--source-root=" + root],
+          outputTarget: "stdout",
+        },
+        {
+          executable: "codeql",
+          args: ["database", "analyze", database, "--format=sarifv2.1.0", "--output=" + outputFile],
+          outputTarget: "file",
+        },
+      ];
+    },
   },
   {
     id: "semgrep",
@@ -25,15 +33,11 @@ export const TDI_TOOLCHAIN: readonly ToolDefinition[] = [
     outputFormat: "sarif-2.1.0",
     purpose: "Pattern-based security, correctness and maintainability analysis",
     executable: "semgrep",
-    buildArgs: (root, outputFile) => [
-      "scan",
-      "--sarif",
-      "--output",
-      outputFile,
-      "--config",
-      "auto",
-      root,
-    ],
+    buildCommands: (root, outputFile) => [{
+      executable: "semgrep",
+      args: ["scan", "--sarif", "--output", outputFile, "--config", "auto", root],
+      outputTarget: "file",
+    }],
   },
   {
     id: "osv-scanner",
@@ -42,14 +46,11 @@ export const TDI_TOOLCHAIN: readonly ToolDefinition[] = [
     outputFormat: "sarif-2.1.0",
     purpose: "Dependency vulnerability evidence",
     executable: "osv-scanner",
-    buildArgs: (root, outputFile) => [
-      "scan",
-      "--format",
-      "sarif",
-      "--output",
-      outputFile,
-      root,
-    ],
+    buildCommands: (root, outputFile) => [{
+      executable: "osv-scanner",
+      args: ["scan", "--format", "sarif", "--output", outputFile, root],
+      outputTarget: "file",
+    }],
   },
   {
     id: "trivy",
@@ -58,14 +59,11 @@ export const TDI_TOOLCHAIN: readonly ToolDefinition[] = [
     outputFormat: "sarif-2.1.0",
     purpose: "Vulnerability, misconfiguration, secret and supply-chain scanning",
     executable: "trivy",
-    buildArgs: (root, outputFile) => [
-      "fs",
-      "--format",
-      "sarif",
-      "--output",
-      outputFile,
-      root,
-    ],
+    buildCommands: (root, outputFile) => [{
+      executable: "trivy",
+      args: ["fs", "--format", "sarif", "--output", outputFile, root],
+      outputTarget: "file",
+    }],
   },
   {
     id: "actionlint",
@@ -74,7 +72,11 @@ export const TDI_TOOLCHAIN: readonly ToolDefinition[] = [
     outputFormat: "json",
     purpose: "GitHub Actions workflow validation",
     executable: "actionlint",
-    buildArgs: (root) => ["-format", "{{json .}}", root],
+    buildCommands: (root) => [{
+      executable: "actionlint",
+      args: ["-format", "{{json .}}", root],
+      outputTarget: "stdout",
+    }],
   },
   {
     id: "dependency-cruiser",
@@ -83,13 +85,11 @@ export const TDI_TOOLCHAIN: readonly ToolDefinition[] = [
     outputFormat: "json",
     purpose: "Architecture dependency graph and rule violations",
     executable: "depcruise",
-    buildArgs: (root, outputFile) => [
-      root,
-      "--output-type",
-      "json",
-      "--output-to",
-      outputFile,
-    ],
+    buildCommands: (root) => [{
+      executable: "depcruise",
+      args: [root, "--output-type", "json"],
+      outputTarget: "stdout",
+    }],
   },
   {
     id: "knip",
@@ -98,12 +98,11 @@ export const TDI_TOOLCHAIN: readonly ToolDefinition[] = [
     outputFormat: "json",
     purpose: "Dead code, unused exports and dependencies",
     executable: "knip",
-    buildArgs: (_root, outputFile) => [
-      "--reporter",
-      "json",
-      "--output",
-      outputFile,
-    ],
+    buildCommands: () => [{
+      executable: "knip",
+      args: ["--reporter", "json"],
+      outputTarget: "stdout",
+    }],
   },
   {
     id: "scorecard",
@@ -112,7 +111,11 @@ export const TDI_TOOLCHAIN: readonly ToolDefinition[] = [
     outputFormat: "json",
     purpose: "Repository and supply-chain security posture",
     executable: "scorecard",
-    buildArgs: (_root, outputFile) => ["--format", "json", "--output", outputFile],
+    buildCommands: () => [{
+      executable: "scorecard",
+      args: ["--format", "json"],
+      outputTarget: "stdout",
+    }],
   },
   {
     id: "syft",
@@ -121,7 +124,11 @@ export const TDI_TOOLCHAIN: readonly ToolDefinition[] = [
     outputFormat: "spdx-2.3",
     purpose: "SBOM generation",
     executable: "syft",
-    buildArgs: (root) => [root, "-o", "spdx-json"],
+    buildCommands: (root) => [{
+      executable: "syft",
+      args: [root, "-o", "spdx-json"],
+      outputTarget: "stdout",
+    }],
   },
   {
     id: "gitleaks",
@@ -130,16 +137,11 @@ export const TDI_TOOLCHAIN: readonly ToolDefinition[] = [
     outputFormat: "json",
     purpose: "Secret detection including history-aware scans",
     executable: "gitleaks",
-    buildArgs: (root, outputFile) => [
-      "detect",
-      "--source",
-      root,
-      "--report-format",
-      "json",
-      "--report-path",
-      outputFile,
-      "--redact",
-    ],
+    buildCommands: (root, outputFile) => [{
+      executable: "gitleaks",
+      args: ["detect", "--source", root, "--report-format", "json", "--report-path", outputFile, "--redact"],
+      outputTarget: "file",
+    }],
   },
 ] as const;
 

@@ -1,6 +1,6 @@
-import { SandboxHandle } from "../../../sandbox/src/cleanup";
-import { runtime } from "../../../sandbox/src/runtime";
-import { RESOURCE_LIMITS } from "../../../sandbox/src/resource-limits";
+import { SandboxHandle } from "../../../../sandbox/src/cleanup";
+import { runtime } from "../../../../sandbox/src/runtime";
+import { RESOURCE_LIMITS } from "../../../../sandbox/src/resource-limits";
 import { TdiCommandResult, TdiToolExecutor } from "./orchestrator";
 
 export class TdiSandboxExecutor implements TdiToolExecutor {

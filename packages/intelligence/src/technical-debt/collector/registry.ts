@@ -5,6 +5,13 @@ import {
   normalizeSarif,
   normalizeTrivySarif,
 } from "./normalizer";
+import {
+  normalizeDependencyCruiserJson,
+  normalizeGitleaksJson,
+  normalizeKnipJson,
+  normalizeScorecardJson,
+  normalizeSyftJson,
+} from "./specialized-normalizers";
 import { ToolOutputEnvelope } from "./types";
 
 export interface TdiToolAdapter {
@@ -18,6 +25,14 @@ const adapters = new Map<string, TdiToolAdapter>([
   ["osv-scanner", { toolId: "osv-scanner", normalize: normalizeOsvSarif }],
   ["trivy", { toolId: "trivy", normalize: normalizeTrivySarif }],
   ["actionlint", { toolId: "actionlint", normalize: normalizeActionlintJson }],
+  ["dependency-cruiser", {
+    toolId: "dependency-cruiser",
+    normalize: normalizeDependencyCruiserJson,
+  }],
+  ["knip", { toolId: "knip", normalize: normalizeKnipJson }],
+  ["scorecard", { toolId: "scorecard", normalize: normalizeScorecardJson }],
+  ["syft", { toolId: "syft", normalize: normalizeSyftJson }],
+  ["gitleaks", { toolId: "gitleaks", normalize: normalizeGitleaksJson }],
 ]);
 
 export function registerTdiToolAdapter(adapter: TdiToolAdapter): void {

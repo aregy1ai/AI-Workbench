@@ -1,5 +1,5 @@
 import { Evidence } from "../contracts/evidence";
-import { canonicalToolOutputDigest, normalizeToolOutput } from "./specialized-normalizers";
+import { canonicalToolOutputDigest } from "./specialized-normalizers";
 import { normalizeToolOutput as normalizeRegisteredToolOutput } from "./registry";
 import { getToolDefinition } from "./tool-registry";
 import {

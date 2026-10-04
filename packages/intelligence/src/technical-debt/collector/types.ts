@@ -14,6 +14,8 @@ export interface PinnedSource {
   tenantId: string;
   workspaceId: string;
   repositoryId: string;
+  /** External source locator, e.g. GitHub owner/repo. */
+  repositoryLocator?: string;
   commitSha: string;
   sourceRoot: string;
 }

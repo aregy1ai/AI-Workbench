@@ -138,7 +138,7 @@ export class RepositoryEvidenceCollector {
         path: file.path,
         collectedAt: new Date().toISOString(),
         contentDigest,
-        data: payload,
+        data: { ...payload, evidenceRecordDigest },
       });
     }
 

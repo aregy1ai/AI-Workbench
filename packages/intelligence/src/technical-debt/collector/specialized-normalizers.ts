@@ -110,7 +110,7 @@ export function normalizeKnipJson(envelope: ToolOutputEnvelope): Evidence[] {
   const issues = flattenKnip(parseJson(envelope.stdout, "TDI_KNIP_JSON_INVALID"));
   return issues.map((issue: any) => makeRecord(
     envelope,
-    "maintainability",
+    "static_analysis",
     "tool:knip",
     typeof issue?.file === "string" ? issue.file : (typeof issue?.path === "string" ? issue.path : undefined),
     {
@@ -190,7 +190,7 @@ export function normalizeGitleaksJson(envelope: ToolOutputEnvelope): Evidence[] 
   return report.map((entry: any) => {
     const safe = redactSecretRecord(entry);
     const path = typeof safe.file === "string" ? safe.file : undefined;
-    const line = Number.isInteger(safe.line) ? safe.line : undefined;
+    const line = typeof safe.line === "number" && Number.isInteger(safe.line) ? safe.line : undefined;
     return makeRecord(envelope, "security", "tool:gitleaks", path, {
       toolVersion: envelope.invocation.version,
       ...safe,

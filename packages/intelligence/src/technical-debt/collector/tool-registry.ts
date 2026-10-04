@@ -48,7 +48,7 @@ export const TDI_TOOLCHAIN: readonly ToolDefinition[] = [
     executable: "osv-scanner",
     buildCommands: (root, outputFile) => [{
       executable: "osv-scanner",
-      args: ["scan", "--format", "sarif", "--output", outputFile, root],
+      args: ["scan", "source", "--format", "sarif", "--output-file", outputFile, "-r", root],
       outputTarget: "file",
     }],
   },

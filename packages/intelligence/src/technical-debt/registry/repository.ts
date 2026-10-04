@@ -38,17 +38,16 @@ export interface TdiRegistryRepository {
   ): Promise<void>;
 }
 
-function dateOrNow(value?: string): string {
-  return value ?? new Date().toISOString();
-}
-
-function uuid(value: string, code: string): string {
-  if (!/^[0-9a-f-]{20,64}$/i.test(value)) throw new Error(code);
-  return value;
+function assertUuid(value: string, code: string): void {
+  if (!/^[0-9a-f-]{36}$/i.test(value)) throw new Error(code);
 }
 
 function assertText(value: string, code: string): void {
   if (!value || !value.trim()) throw new Error(code);
+}
+
+function dateOrNow(value?: string): string {
+  return value ?? new Date().toISOString();
 }
 
 function insertEvidence(tx: Transaction, scanId: string, evidence: Evidence): Promise<void> {
@@ -77,7 +76,13 @@ function insertEvidence(tx: Transaction, scanId: string, evidence: Evidence): Pr
   );
 }
 
-function insertFinding(tx: Transaction, scanId: string, finding: Finding, tenantId: string, workspaceId: string): Promise<void> {
+function insertFinding(
+  tx: Transaction,
+  scanId: string,
+  finding: Finding,
+  tenantId: string,
+  workspaceId: string,
+): Promise<void> {
   return tx.execute(
     `INSERT INTO tdi_findings
       (id, tenant_id, workspace_id, scan_id, finding_key, category,
@@ -93,9 +98,9 @@ function insertFinding(tx: Transaction, scanId: string, finding: Finding, tenant
       finding.category,
       finding.severity,
       finding.confidence,
-      "{" + finding.evidenceIds.join(",") + "}",
-      "{" + finding.affectedPaths.join(",") + "}",
-      "{" + (finding.affectedSymbols ?? []).join(",") + "}",
+      finding.evidenceIds,
+      finding.affectedPaths,
+      finding.affectedSymbols ?? [],
       finding.recommendation,
       finding.explanation ?? null,
     ],
@@ -130,8 +135,8 @@ function insertDebt(
       debt.repositoryId,
       debt.commitSha,
       debt.locationPath,
-      "{" + debt.locationSymbols.join(",") + "}",
-      "{" + debt.evidenceIds.join(",") + "}",
+      debt.locationSymbols,
+      debt.evidenceIds,
       debt.evidenceHash,
       debt.category,
       debt.severity,
@@ -182,11 +187,6 @@ function insertDecision(
   );
 }
 
-function pgTextArray(values: readonly string[]): string {
-  // PostgreSQL text[] literal with conservative escaping.
-  return "{" + values.map((value) => '"' + value.replace(/\/g, "\\").replace(/"/g, '\"').replace(/,/g, "\,") + '"').join(",") + "}";
-}
-
 export class PostgresTdiRegistryRepository implements TdiRegistryRepository {
   constructor(private readonly db: Database) {}
 
@@ -197,7 +197,15 @@ export class PostgresTdiRegistryRepository implements TdiRegistryRepository {
     assertText(context.tenantId, "TDI_REGISTRY_TENANT_REQUIRED");
     assertText(context.actorId, "TDI_REGISTRY_ACTOR_REQUIRED");
     assertText(context.requestId, "TDI_REGISTRY_REQUEST_REQUIRED");
-    const scanId = uuid(bundle.scan.id, "TDI_SCAN_ID_INVALID");
+
+    assertUuid(bundle.scan.id, "TDI_SCAN_ID_INVALID");
+    assertUuid(bundle.scan.tenantId, "TDI_SCAN_TENANT_UUID_INVALID");
+    assertUuid(bundle.scan.workspaceId, "TDI_SCAN_WORKSPACE_UUID_INVALID");
+    assertUuid(bundle.scan.repositoryId, "TDI_SCAN_REPOSITORY_UUID_INVALID");
+
+    if (bundle.scan.tenantId !== context.tenantId) {
+      throw new Error("TDI_REGISTRY_TENANT_CONTEXT_MISMATCH");
+    }
 
     await withTenantContext(this.db, context, async (tx) => {
       await tx.execute(
@@ -206,7 +214,7 @@ export class PostgresTdiRegistryRepository implements TdiRegistryRepository {
            collector_version, analyzer_version, started_at, completed_at, failure_code)
          VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)`,
         [
-          scanId,
+          bundle.scan.id,
           bundle.scan.tenantId,
           bundle.scan.workspaceId,
           bundle.scan.repositoryId,
@@ -214,7 +222,7 @@ export class PostgresTdiRegistryRepository implements TdiRegistryRepository {
           bundle.scan.status,
           bundle.scan.collectorVersion,
           bundle.scan.analyzerVersion ?? null,
-          bundle.scan.startedAt ?? null,
+          dateOrNow(bundle.scan.startedAt),
           bundle.scan.completedAt ?? null,
           bundle.scan.failureCode ?? null,
         ],
@@ -229,13 +237,13 @@ export class PostgresTdiRegistryRepository implements TdiRegistryRepository {
         ) {
           throw new Error("TDI_REGISTRY_EVIDENCE_SCOPE_MISMATCH");
         }
-        await insertEvidence(tx, scanId, evidence);
+        await insertEvidence(tx, bundle.scan.id, evidence);
       }
 
       for (const finding of bundle.findings) {
         await insertFinding(
           tx,
-          scanId,
+          bundle.scan.id,
           finding,
           bundle.scan.tenantId,
           bundle.scan.workspaceId,
@@ -246,7 +254,7 @@ export class PostgresTdiRegistryRepository implements TdiRegistryRepository {
             `INSERT INTO tdi_finding_evidence
               (tenant_id, scan_id, finding_id, evidence_id)
              VALUES ($1,$2,$3,$4)`,
-            [bundle.scan.tenantId, scanId, finding.id, evidenceId],
+            [bundle.scan.tenantId, bundle.scan.id, finding.id, evidenceId],
           );
         }
       }
@@ -261,7 +269,7 @@ export class PostgresTdiRegistryRepository implements TdiRegistryRepository {
 
         await insertDebt(
           tx,
-          scanId,
+          bundle.scan.id,
           debt,
           bundle.scan.tenantId,
           bundle.scan.workspaceId,
@@ -272,7 +280,7 @@ export class PostgresTdiRegistryRepository implements TdiRegistryRepository {
             `INSERT INTO tdi_debt_evidence
               (tenant_id, scan_id, td_id, evidence_id)
              VALUES ($1,$2,$3,$4)`,
-            [bundle.scan.tenantId, scanId, debt.tdId, evidenceId],
+            [bundle.scan.tenantId, bundle.scan.id, debt.tdId, evidenceId],
           );
         }
       }
@@ -291,12 +299,4 @@ export class PostgresTdiRegistryRepository implements TdiRegistryRepository {
       }
     });
   }
-}
-
-/**
- * Encode text arrays for callers/tests that need PostgreSQL literals.
- * Kept exported so DB adapters use exactly one escaping implementation.
- */
-export function toPgTextArray(values: readonly string[]): string {
-  return pgTextArray(values);
 }

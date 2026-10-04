@@ -22,7 +22,6 @@ export class TestEvidenceCollector {
         name: item.name,
         required: item.required,
         exitCode: item.exitCode,
-        durationMs: item.durationMs,
         hasStdout: item.stdout.length > 0,
         hasStderr: item.stderr.length > 0,
       })),

@@ -17,3 +17,9 @@ export * from "./source/github";
 
 export * from "./collector/repository";
 export * from "./collector/orchestrator";
+
+export * from "./collector/git";
+export * from "./collector/ci";
+export * from "./collector/tests";
+export * from "./collector/sandbox-executor";
+export * from "./source/github-history";

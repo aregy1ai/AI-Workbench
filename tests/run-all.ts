@@ -18,6 +18,8 @@ const security = await import("./security/tenant-isolation.test");
 const gateway = await import("./security/tool-gateway.test");
 const audit = await import("./security/audit-hash-chain.test");
 const sandbox = await import("./security/sandbox-tool-allowlist.test");
+const sandboxExecutor = await import("./intelligence/technical-debt-sandbox-executor.test");
+const testRunner = await import("./test-runner/commands.test");
 
 const tdiResults = tdi.runTechnicalDebtGateTestSuite();
 const collectorResults = collectors.runTechnicalDebtCollectorTestSuite();
@@ -29,6 +31,8 @@ const securityResults = security.runSecurityTestSuite();
 const gatewayResults = await gateway.runGatewayTestSuite();
 const auditResults = audit.runAuditHashChainTestSuite();
 const sandboxResults = sandbox.runSandboxToolAllowlistTestSuite();
+const sandboxExecutorResults = await sandboxExecutor.runTechnicalDebtSandboxExecutorSuite();
+const testRunnerResults = testRunner.runTestRunnerCommandSuite();
 
 const failures = [
   ...tdiResults.filter((r) => !r.passed).map((r) => "TDI: " + r.name + " :: " + (r.details ?? "")),
@@ -41,10 +45,14 @@ const failures = [
   ...gatewayResults.filter((r) => !r.passed).map((r) => "GATEWAY: " + r.name + " :: " + (r.details ?? "")),
   ...auditResults.filter((r) => !r.passed).map((r) => "AUDIT: " + r.name + " :: " + (r.details ?? "")),
   ...sandboxResults.filter((r) => !r.passed).map((r) => "SANDBOX: " + r.name + " :: " + (r.details ?? "")),
+  ...sandboxExecutorResults.filter((r) => !r.passed).map((r) => "SANDBOX-EXECUTOR: " + r.name + " :: " + (r.details ?? "")),
+  ...testRunnerResults.filter((r) => !r.passed).map((r) => "TEST-RUNNER: " + r.name + " :: " + (r.details ?? "")),
 ];
 
 console.log(
   "TDI=" + tdiResults.filter((r) => r.passed).length + "/" + tdiResults.length +
+  " SANDBOX_EXECUTOR=" + sandboxExecutorResults.filter((r) => r.passed).length + "/" + sandboxExecutorResults.length +
+  " TEST_RUNNER=" + testRunnerResults.filter((r) => r.passed).length + "/" + testRunnerResults.length +
   " EVIDENCE=" + evidenceCollectorResults.filter((r) => r.passed).length + "/" + evidenceCollectorResults.length +
   " COLLECTOR=" + collectorResults.filter((r) => r.passed).length + "/" + collectorResults.length +
   " SOURCE=" + sourceResults.filter((r) => r.passed).length + "/" + sourceResults.length +

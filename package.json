@@ -12,7 +12,8 @@
     "lint": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
     "test": "tsx tests/run-all.ts",
-    "test:security": "tsx tests/security-runner.ts"
+    "test:security": "tsx tests/security-runner.ts",
+    "tdi:verify-live": "tsx scripts/tdi-verify-live-tools.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

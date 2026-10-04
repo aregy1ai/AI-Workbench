@@ -5,6 +5,7 @@ export interface GitHubSourceRequest {
   tenantId: string;
   workspaceId: string;
   repositoryId: string;
+  repositoryLocator?: string;
   commitSha: string;
 }
 

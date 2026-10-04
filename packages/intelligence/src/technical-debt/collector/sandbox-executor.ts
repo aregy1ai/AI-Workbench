@@ -7,6 +7,7 @@ export class TdiSandboxExecutor implements TdiToolExecutor {
   constructor(private readonly sandbox: SandboxHandle) {}
 
   public async execute(input: {
+    source: { tenantId: string; workspaceId: string; repositoryId: string; commitSha: string; sourceRoot: string };
     executable: string;
     args: string[];
     cwd: string;
@@ -14,6 +15,14 @@ export class TdiSandboxExecutor implements TdiToolExecutor {
     timeoutMs: number;
     maxOutputBytes: number;
   }): Promise<TdiCommandResult> {
+    if (
+      input.source.sourceRoot !== this.sandbox.workspacePath ||
+      (this.sandbox.tenantId && this.sandbox.tenantId !== input.source.tenantId) ||
+      (this.sandbox.workspaceId && this.sandbox.workspaceId !== input.source.workspaceId)
+    ) {
+      throw new Error("TDI_EXECUTION_SOURCE_SCOPE_MISMATCH");
+    }
+
     if (input.cwd !== this.sandbox.workspacePath) {
       throw new Error("TDI_EXECUTION_CWD_OUTSIDE_SANDBOX");
     }

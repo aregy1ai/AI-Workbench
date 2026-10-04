@@ -28,19 +28,42 @@ function sha256(value: string): string {
   return "sha256:" + createHash("sha256").update(value, "utf8").digest("hex");
 }
 
+function canonicalJson(value: unknown): string {
+  return JSON.stringify(value);
+}
+
 function canonicalPayload(event: {
   tenantId: string;
+  workspaceId: string;
   actorId: string;
   eventType: string;
   payloadSummary: string;
   metadata: Record<string, unknown>;
 }): string {
-  return JSON.stringify({
+  return canonicalJson({
     actorId: event.actorId,
     eventType: event.eventType,
-    meta: event.metadata,
-    summary: event.payloadSummary,
+    metadata: event.metadata,
+    payloadSummary: event.payloadSummary,
     tenantId: event.tenantId,
+    workspaceId: event.workspaceId,
+  });
+}
+
+function canonicalEvent(event: AuditEventRecord): string {
+  return canonicalJson({
+    actorId: event.actorId,
+    eventId: event.eventId,
+    eventType: event.eventType,
+    occurredAt: event.occurredAt,
+    payloadHash: event.payloadHash,
+    previousEventHash: event.previousEventHash,
+    runId: event.runId ?? null,
+    sequenceNumber: event.sequenceNumber,
+    sensitivity: event.sensitivity,
+    stepId: event.stepId ?? null,
+    tenantId: event.tenantId,
+    workspaceId: event.workspaceId,
   });
 }
 
@@ -62,17 +85,20 @@ export class AuditHashChainLedger {
     eventType: string;
     payloadSummary: string;
     metadata?: Record<string, unknown>;
+    sensitivity?: "internal" | "restricted" | "public";
   }): AuditEventRecord {
     const sequenceNumber = this.chain.length + 1;
     const previousEventHash =
-      sequenceNumber === 1
-        ? GENESIS_HASH
-        : this.chain[sequenceNumber - 2].eventHash;
+      sequenceNumber === 1 ? GENESIS_HASH : this.chain[sequenceNumber - 2].eventHash;
     const metadata = event.metadata ?? {};
+    const sensitivity = event.sensitivity ?? "internal";
+    const occurredAt = new Date().toISOString();
+    const eventId = "aud_" + randomUUID();
 
     const payloadHash = sha256(
       canonicalPayload({
         tenantId: event.tenantId,
+        workspaceId: event.workspaceId,
         actorId: event.actorId,
         eventType: event.eventType,
         payloadSummary: event.payloadSummary,
@@ -80,17 +106,8 @@ export class AuditHashChainLedger {
       }),
     );
 
-    const eventHash = sha256(
-      JSON.stringify({
-        eventType: event.eventType,
-        payloadHash,
-        previousEventHash,
-        sequenceNumber,
-      }),
-    );
-
-    const record: AuditEventRecord = {
-      eventId: "aud_" + randomUUID(),
+    const draft: AuditEventRecord = {
+      eventId,
       tenantId: event.tenantId,
       workspaceId: event.workspaceId,
       runId: event.runId,
@@ -100,15 +117,16 @@ export class AuditHashChainLedger {
       sequenceNumber,
       previousEventHash,
       payloadHash,
-      eventHash,
-      sensitivity: "internal",
+      eventHash: "",
+      sensitivity,
       payloadSummary: event.payloadSummary,
       metadata,
-      occurredAt: new Date().toISOString(),
+      occurredAt,
     };
 
-    this.chain.push(record);
-    return record;
+    draft.eventHash = sha256(canonicalEvent(draft));
+    this.chain.push(draft);
+    return draft;
   }
 
   public verifyIntegrity(): {
@@ -122,16 +140,13 @@ export class AuditHashChainLedger {
         i === 0 ? GENESIS_HASH : this.chain[i - 1].eventHash;
 
       if (current.previousEventHash !== expectedPrevious) {
-        return {
-          intact: false,
-          corruptedIndex: i,
-          message: "HASH_LINK_BROKEN",
-        };
+        return { intact: false, corruptedIndex: i, message: "HASH_LINK_BROKEN" };
       }
 
       const recomputedPayloadHash = sha256(
         canonicalPayload({
           tenantId: current.tenantId,
+          workspaceId: current.workspaceId,
           actorId: current.actorId,
           eventType: current.eventType,
           payloadSummary: current.payloadSummary,
@@ -140,41 +155,21 @@ export class AuditHashChainLedger {
       );
 
       if (current.payloadHash !== recomputedPayloadHash) {
-        return {
-          intact: false,
-          corruptedIndex: i,
-          message: "AUDIT_PAYLOAD_TAMPERED",
-        };
+        return { intact: false, corruptedIndex: i, message: "AUDIT_PAYLOAD_TAMPERED" };
       }
 
-      const recomputedEventHash = sha256(
-        JSON.stringify({
-          eventType: current.eventType,
-          payloadHash: current.payloadHash,
-          previousEventHash: current.previousEventHash,
-          sequenceNumber: current.sequenceNumber,
-        }),
-      );
+      const recomputedEventHash = sha256(canonicalEvent(current));
 
       if (current.eventHash !== recomputedEventHash) {
-        return {
-          intact: false,
-          corruptedIndex: i,
-          message: "AUDIT_EVENT_HASH_MISMATCH",
-        };
+        return { intact: false, corruptedIndex: i, message: "AUDIT_EVENT_HASH_MISMATCH" };
       }
     }
 
-    return {
-      intact: true,
-      message: "AUDIT_SHA256_CHAIN_VALID",
-    };
+    return { intact: true, message: "AUDIT_SHA256_CHAIN_VALID" };
   }
 
   public tamperWithEvent(index: number, newSummary: string): void {
-    if (this.chain[index]) {
-      this.chain[index].payloadSummary = newSummary;
-    }
+    if (this.chain[index]) this.chain[index].payloadSummary = newSummary;
   }
 }
 

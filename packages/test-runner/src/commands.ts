@@ -13,23 +13,44 @@ export interface TestCommand {
 }
 
 export interface ProjectManifest {
-  packageManager?: "pnpm" | "npm" | "yarn";
+  packageManager?: "bun" | "pnpm" | "npm" | "yarn";
   python?: boolean;
   scripts?: Record<string, string>;
 }
 
+function packageManagerTestCommand(
+  packageManager: NonNullable<ProjectManifest["packageManager"]>,
+): TestCommand {
+  const args =
+    packageManager === "bun"
+      ? ["run", "test"]
+      : ["run", "test"];
+
+  return {
+    name: "unit",
+    executable: packageManager,
+    args,
+    cwd: ".",
+    timeoutMs: 10 * 60_000,
+    required: true,
+  };
+}
+
 export function detectTestCommands(manifest: ProjectManifest): TestCommand[] {
+  if (manifest.packageManager === "bun") {
+    return [packageManagerTestCommand("bun")];
+  }
+
   if (manifest.packageManager === "pnpm") {
-    return [
-      {
-        name: "unit",
-        executable: "pnpm",
-        args: ["test", "--if-present"],
-        cwd: ".",
-        timeoutMs: 10 * 60_000,
-        required: true,
-      },
-    ];
+    return [packageManagerTestCommand("pnpm")];
+  }
+
+  if (manifest.packageManager === "npm") {
+    return [packageManagerTestCommand("npm")];
+  }
+
+  if (manifest.packageManager === "yarn") {
+    return [packageManagerTestCommand("yarn")];
   }
 
   if (manifest.python) {
@@ -49,7 +70,7 @@ export function detectTestCommands(manifest: ProjectManifest): TestCommand[] {
     {
       name: "unit",
       executable: "npm",
-      args: ["test"],
+      args: ["run", "test"],
       cwd: ".",
       timeoutMs: 10 * 60_000,
       required: true,

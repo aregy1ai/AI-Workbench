@@ -207,7 +207,12 @@ export class GitHubCommitSourceProvider implements PinnedSourceProvider {
     }
 
     const normalized = String(blob.content).replace(/\s+/g, "");
-    const content = Buffer.from(normalized, "base64").toString("utf8");
+    const bytes = Buffer.from(normalized, "base64");
+    const content = bytes.toString("utf8");
+
+    if (!bytes.equals(Buffer.from(content, "utf8"))) {
+      throw new Error("TDI_BLOB_BINARY_CONTENT");
+    }
 
     return {
       blobSha: input.blobSha,

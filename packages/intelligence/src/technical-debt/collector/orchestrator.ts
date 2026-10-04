@@ -1,5 +1,6 @@
 import { Evidence } from "../contracts/evidence";
 import { canonicalToolOutputDigest } from "./specialized-normalizers";
+import { sha256Digest } from "./digest";
 import { normalizeToolOutput as normalizeRegisteredToolOutput } from "./registry";
 import { getToolDefinition } from "./tool-registry";
 import {
@@ -143,7 +144,8 @@ export class TdiScanOrchestrator {
           stdout: output,
           stderr,
           exitCode,
-          rawOutputDigest: canonicalToolOutputDigest({
+          rawOutputDigest: sha256Digest(output),
+          executionEnvelopeDigest: canonicalToolOutputDigest({
             source: request.source,
             invocation,
             stdout: output,

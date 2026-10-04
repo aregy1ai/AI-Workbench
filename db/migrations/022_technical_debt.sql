@@ -135,6 +135,7 @@ CREATE TABLE IF NOT EXISTS tdi_findings (
   created_at timestamptz NOT NULL DEFAULT now(),
 
   UNIQUE (tenant_id, id),
+  UNIQUE (tenant_id, scan_id, id),
   UNIQUE (tenant_id, scan_id, finding_key),
 
   CONSTRAINT tdi_findings_scan_scope_fk
@@ -207,8 +208,8 @@ CREATE TABLE IF NOT EXISTS tdi_debt_records (
   UNIQUE (tenant_id, td_key),
 
   CONSTRAINT tdi_debt_finding_scope_fk
-    FOREIGN KEY (tenant_id, finding_id)
-    REFERENCES tdi_findings (tenant_id, id)
+    FOREIGN KEY (tenant_id, scan_id, finding_id)
+    REFERENCES tdi_findings (tenant_id, scan_id, id)
     ON DELETE CASCADE,
 
   CONSTRAINT tdi_debt_scan_scope_fk

@@ -113,8 +113,8 @@ export class RepositoryEvidenceCollector {
         sizeBytes: Buffer.byteLength(result.content, "utf8"),
         lineCount: lineCount(result.content),
         contentDigest,
-        evidenceRecordDigest: digestJson(payload),
       };
+      const evidenceRecordDigest = digestJson(payload);
 
       const evidenceKey = deterministicEvidenceId({
         tenantId: input.tenantId,

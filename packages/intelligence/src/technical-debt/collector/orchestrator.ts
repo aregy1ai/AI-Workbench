@@ -19,6 +19,7 @@ export interface TdiCommandResult {
 
 export interface TdiToolExecutor {
   execute(input: {
+    source: PinnedSource;
     executable: string;
     args: string[];
     cwd: string;
@@ -85,6 +86,7 @@ export class TdiScanOrchestrator {
       try {
         for (const command of commands) {
           const result = await this.executor.execute({
+            source: request.source,
             executable: command.executable,
             args: command.args,
             cwd: request.source.sourceRoot,

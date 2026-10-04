@@ -35,7 +35,10 @@ export interface ToolOutputEnvelope {
   stdout: string;
   stderr?: string;
   exitCode: number;
+  /** Exact UTF-8 stdout digest, independent of timestamps/runtime metadata. */
   rawOutputDigest?: string;
+  /** Deterministic digest of source + invocation + complete tool output envelope. */
+  executionEnvelopeDigest?: string;
 }
 
 export interface ToolCommandSpec {

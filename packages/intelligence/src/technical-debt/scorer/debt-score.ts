@@ -1,21 +1,20 @@
 /**
  * Eagle TDI v1 - Deterministic Debt Scorer
- *
- * No model output controls score weights. The scorer is deterministic and
- * replayable from persisted inputs.
+ * The weights live in a versioned scoring policy so replay is explicit.
  */
-
 import { FindingSeverity } from "../contracts/finding";
+import { TDI_SCORING_POLICY, severityWeightFor } from "./scoring-policy";
 
 export interface DebtScoreInput {
-  impact: number;                 // 0..10
+  impact: number;
   severity: FindingSeverity;
-  confidence: number;             // 0..1
-  changeFrequency: number;         // changes per measurement window
-  remediationEffortHours: number; // >= 0
+  confidence: number;
+  changeFrequency: number;
+  remediationEffortHours: number;
 }
 
 export interface DebtMetrics {
+  scoringPolicyVersion: string;
   impact: number;
   risk: number;
   changeFrequency: number;
@@ -24,15 +23,8 @@ export interface DebtMetrics {
   debtScore: number;
 }
 
-const SEVERITY_WEIGHT: Record<FindingSeverity, number> = {
-  low: 0.25,
-  medium: 0.50,
-  high: 0.90,
-  critical: 1.00,
-};
-
 function assertFinite(name: string, value: number): void {
-  if (!Number.isFinite(value)) throw new Error(`DEBT_SCORE_${name.toUpperCase()}_INVALID`);
+  if (!Number.isFinite(value)) throw new Error("DEBT_SCORE_" + name.toUpperCase() + "_INVALID");
 }
 
 export function calculateDebtMetrics(input: DebtScoreInput): DebtMetrics {
@@ -55,10 +47,10 @@ export function calculateDebtMetrics(input: DebtScoreInput): DebtMetrics {
   }
 
   const risk = Number(
-    (SEVERITY_WEIGHT[input.severity] * input.confidence).toFixed(4)
+    (severityWeightFor(input.severity) * input.confidence).toFixed(4),
   );
   const remediationCostFactor = Number(
-    (1 + input.remediationEffortHours / 40).toFixed(4)
+    (1 + input.remediationEffortHours / TDI_SCORING_POLICY.remediationHoursBase).toFixed(4),
   );
 
   const debtScore = Number(
@@ -67,10 +59,11 @@ export function calculateDebtMetrics(input: DebtScoreInput): DebtMetrics {
       risk *
       input.changeFrequency *
       remediationCostFactor
-    ).toFixed(4)
+    ).toFixed(4),
   );
 
   return {
+    scoringPolicyVersion: "tdi-score-v1.0",
     impact: input.impact,
     risk,
     changeFrequency: input.changeFrequency,
@@ -81,5 +74,5 @@ export function calculateDebtMetrics(input: DebtScoreInput): DebtMetrics {
 }
 
 export function severityWeight(severity: FindingSeverity): number {
-  return SEVERITY_WEIGHT[severity];
+  return severityWeightFor(severity);
 }

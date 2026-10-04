@@ -1,14 +1,16 @@
 /**
- * AI Workbench - Signed Execution Context with Nonce Replay Defense
- * Sprint 4: Policy Engine & Tool Gateway
+ * AI Workbench - Signed Execution Context with HMAC and nonce replay defense.
  */
-
-import { ExecutionContextPayload, SignedExecutionContext } from "../../contracts/src/execution-context";
+import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
+import {
+  ExecutionContextPayload,
+  SignedExecutionContext,
+} from "../../contracts/src/execution-context";
 import { nonceStore } from "./nonce-store";
 
 function encodeBase64Url(obj: unknown): string {
-  const json = JSON.stringify(obj);
-  return btoa(unescape(encodeURIComponent(json)))
+  return Buffer.from(JSON.stringify(obj), "utf8")
+    .toString("base64")
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
     .replace(/=+$/, "");
@@ -16,51 +18,68 @@ function encodeBase64Url(obj: unknown): string {
 
 function decodeBase64Url<T>(token: string): T {
   let base64 = token.replace(/-/g, "+").replace(/_/g, "/");
-  while (base64.length % 4) {
-    base64 += "=";
-  }
-  const json = decodeURIComponent(escape(atob(base64)));
-  return JSON.parse(json) as T;
+  while (base64.length % 4) base64 += "=";
+  return JSON.parse(Buffer.from(base64, "base64").toString("utf8")) as T;
 }
 
 export class ExecutionContextSigner {
-  private secretKey: string;
-  private keyId: string;
+  private readonly configuredSecret?: string;
+  private readonly keyId: string;
 
-  constructor(secretKey: string = "default-signer-secret-2026", keyId: string = "key-v1") {
-    this.secretKey = secretKey;
+  constructor(secretKey?: string, keyId: string = "key-v1") {
+    this.configuredSecret = secretKey;
     this.keyId = keyId;
   }
 
-  private computeSignature(payload: ExecutionContextPayload): string {
-    const raw = `${payload.tenantId}:${payload.runId}:${payload.stepId}:${payload.nonce}:${payload.expiresAt}:${this.secretKey}`;
-    let hash = 0;
-    for (let i = 0; i < raw.length; i++) {
-      hash = (hash << 5) - hash + raw.charCodeAt(i);
-      hash |= 0;
+  private getSecret(): Buffer {
+    const secret = this.configuredSecret ?? process.env.EAGLE_CONTEXT_SIGNER_SECRET;
+    if (!secret || secret.length < 32) {
+      throw new Error("EXECUTION_CONTEXT_SIGNER_SECRET_REQUIRED");
     }
-    return `sig_${this.keyId}_${Math.abs(hash).toString(36)}`;
+    return Buffer.from(secret, "utf8");
+  }
+
+  private computeSignature(payload: ExecutionContextPayload): string {
+    const canonicalPayload = JSON.stringify({
+      issuer: payload.issuer,
+      keyId: payload.keyId,
+      tenantId: payload.tenantId,
+      workspaceId: payload.workspaceId,
+      runId: payload.runId,
+      stepId: payload.stepId,
+      actorId: payload.actorId,
+      requestedAction: payload.requestedAction,
+      riskLevel: payload.riskLevel,
+      policyVersion: payload.policyVersion,
+      cancellationEpoch: payload.cancellationEpoch,
+      issuedAt: payload.issuedAt,
+      expiresAt: payload.expiresAt,
+      nonce: payload.nonce,
+    });
+
+    const digest = createHmac("sha256", this.getSecret())
+      .update(canonicalPayload, "utf8")
+      .digest("base64url");
+
+    return "hmac-sha256_" + this.keyId + "_" + digest;
   }
 
   public async create(
-    input: Omit<ExecutionContextPayload, "issuedAt" | "expiresAt" | "nonce">
+    input: Omit<ExecutionContextPayload, "issuedAt" | "expiresAt" | "nonce">,
   ): Promise<string> {
     const now = Math.floor(Date.now() / 1000);
-
     const payload: ExecutionContextPayload = {
       ...input,
       issuedAt: now,
-      expiresAt: now + 300, // 5 min TTL
-      nonce: `nonce_${Math.random().toString(36).substring(2, 9)}_${now}`,
+      expiresAt: now + 300,
+      nonce: "nonce_" + randomBytes(24).toString("base64url"),
     };
 
     await nonceStore.reserve(payload.nonce, payload.expiresAt);
 
-    const signature = this.computeSignature(payload);
-
     return encodeBase64Url({
       payload,
-      signature,
+      signature: this.computeSignature(payload),
     });
   }
 
@@ -76,8 +95,15 @@ export class ExecutionContextSigner {
       throw new Error("MALFORMED_EXECUTION_CONTEXT");
     }
 
+    if (decoded.payload.keyId !== this.keyId) {
+      throw new Error("EXECUTION_CONTEXT_KEY_ID_MISMATCH");
+    }
+
     const expectedSig = this.computeSignature(decoded.payload);
-    if (decoded.signature !== expectedSig) {
+    const expected = Buffer.from(expectedSig, "utf8");
+    const actual = Buffer.from(decoded.signature, "utf8");
+
+    if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) {
       throw new Error("INVALID_EXECUTION_CONTEXT_SIGNATURE");
     }
 
@@ -86,9 +112,7 @@ export class ExecutionContextSigner {
       throw new Error("EXECUTION_CONTEXT_EXPIRED");
     }
 
-    // Enforce Nonce replay defense
     await nonceStore.consume(decoded.payload.nonce);
-
     return decoded.payload;
   }
 }

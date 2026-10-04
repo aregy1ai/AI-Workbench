@@ -13,3 +13,4 @@ export * from "./collector/normalizer";
 export * from "./collector/specialized-normalizers";
 export * from "./collector/registry";
 export * from "./collector/tool-registry";
+export * from "./source/github";

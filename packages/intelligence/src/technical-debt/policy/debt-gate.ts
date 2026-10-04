@@ -2,12 +2,17 @@
  * Eagle TDI v1 - Deterministic Technical Debt Gate.
  * A raw finding, including an AI finding, cannot manufacture trusted severity.
  */
+import { createHash } from "node:crypto";
 import {
   DebtGateDecision,
   DebtGateDecisionRecord,
 } from "../contracts/decision";
 import { FindingSeverity } from "../contracts/finding";
-import { PolicyFacts, assertTrustedClassification, canBlockFromPolicyFacts } from "./policy-facts";
+import {
+  PolicyFacts,
+  assertTrustedClassification,
+  canBlockFromPolicyFacts,
+} from "./policy-facts";
 
 export const TDI_POLICY_VERSION = "tdi-v1.1";
 
@@ -27,27 +32,18 @@ function decision(
   reason: string,
   facts: PolicyFacts,
 ): DebtGateDecisionRecord {
-  const canonical = [
+  const canonical = JSON.stringify({
     tdId,
-    value,
+    decision: value,
     policyApplied,
-    TDI_POLICY_VERSION,
-    String(facts.evidenceVerified),
-    String(facts.provenanceVerified),
-    String(facts.contractValid),
-    facts.affectedBoundary,
-    facts.category,
-    String(facts.securityRuleMatched),
-    facts.trustedSeverity ?? "",
-    facts.classificationSource,
+    policyVersion: TDI_POLICY_VERSION,
+    facts,
     reasonCode,
     reason,
-  ].join("|");
+  });
 
   const decisionFingerprint =
-    "sha256:" +
-    Array.from(new TextEncoder().encode(canonical))
-      .reduce((hex, byte) => hex + byte.toString(16).padStart(2, "0"), "");
+    "sha256:" + createHash("sha256").update(canonical, "utf8").digest("hex");
 
   return {
     id: "DEC-" + tdId + "-" + value,

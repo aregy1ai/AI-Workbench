@@ -102,9 +102,9 @@ export function runTechnicalDebtCollectorTestSuite(): {
       exitCode: 0,
     };
     const first = normalizeToolOutput(envelope);
-    const second = normalizeToolOutput(envelope);
-    if (first[0].id !== second[0].id) throw new Error("evidence identity is not replay-stable");
-    if (canonicalToolOutputDigest(envelope) !== canonicalToolOutputDigest(envelope)) {
+    const second = normalizeToolOutput({ ...envelope });
+    if (first[0]?.id !== second[0]?.id) throw new Error("evidence identity is not replay-stable");
+    if (canonicalToolOutputDigest(envelope) !== canonicalToolOutputDigest({ ...envelope })) {
       throw new Error("raw output fingerprint is not stable");
     }
   });
@@ -115,16 +115,24 @@ export function runTechnicalDebtCollectorTestSuite(): {
       invocation,
       stdout: JSON.stringify({
         version: "2.1.0",
-        runs: [{ tool: { driver: { name: "Semgrep", version: "1.179.0" } }, results: [] }],
+        runs: [{
+          tool: { driver: { name: "Semgrep", version: "1.179.0" } },
+          results: [{
+            ruleId: "demo.rule",
+            level: "warning",
+            message: { text: "same" },
+          }],
+        }],
       }),
       exitCode: 0,
     };
-    const a = normalizeToolOutput(base)[0];
-    const b = normalizeToolOutput({
+    const first = normalizeToolOutput(base)[0];
+    const second = normalizeToolOutput({
       ...base,
       source: { ...source, commitSha: "a".repeat(40) },
     })[0];
-    if (a && b && a.id === b.id) throw new Error("commit change did not alter identity");
+    if (!first || !second) throw new Error("expected evidence");
+    if (first.id === second.id) throw new Error("commit change did not alter identity");
   });
 
   test("Tool registry exposes every selected analyzer", () => {

@@ -1,7 +1,6 @@
 import { Evidence } from "../contracts/evidence";
 import { ToolOutputEnvelope } from "./types";
 import { digestJson, deterministicEvidenceId } from "./digest";
-import { stableStringify } from "./canonical-json";
 
 function parseJson(stdout: string, code: string): any {
   try { return JSON.parse(stdout); } catch { throw new Error(code); }

@@ -72,7 +72,7 @@ export class GitHubHistoryProvider implements GitHistoryProvider {
     if (!Number.isInteger(windowDays) || windowDays <= 0 || windowDays > 3650) {
       throw new Error("TDI_HISTORY_WINDOW_INVALID");
     }
-    const { owner, repo } = splitRepositoryId(source.repositoryId);
+    const { owner, repo } = splitRepositoryId(source.repositoryLocator ?? source.repositoryId);
     const pinnedCommit = await this.getJson(
       source.repositoryId,
       `/repos/${owner}/${repo}/commits/${source.commitSha}`,
@@ -121,7 +121,7 @@ export class GitHubHistoryProvider implements GitHistoryProvider {
 
   async listWorkflowRuns(source: PinnedSource): Promise<readonly GitHubWorkflowRun[]> {
     assertSha(source.commitSha);
-    const { owner, repo } = splitRepositoryId(source.repositoryId);
+    const { owner, repo } = splitRepositoryId(source.repositoryLocator ?? source.repositoryId);
     const response = await this.getJson(
       source.repositoryId,
       `/repos/${owner}/${repo}/actions/runs?head_sha=${source.commitSha}&per_page=100`,

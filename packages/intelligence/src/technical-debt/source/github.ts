@@ -139,7 +139,7 @@ export class GitHubCommitSourceProvider implements PinnedSourceProvider {
     input: GitHubSourceRequest,
   ): Promise<PinnedRepositorySnapshot> {
     assertCommitSha(input.commitSha);
-    const { owner, repo } = assertRepositoryId(input.repositoryId);
+    const { owner, repo } = assertRepositoryId(input.repositoryLocator ?? input.repositoryId);
 
     const commit = await this.requestJson(
       input.repositoryId,

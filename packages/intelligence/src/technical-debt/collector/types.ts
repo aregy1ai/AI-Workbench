@@ -8,6 +8,8 @@ export type ToolOutputFormat =
   | "cyclonedx"
   | "text";
 
+export type ToolOutputTarget = "stdout" | "file";
+
 export interface PinnedSource {
   tenantId: string;
   workspaceId: string;
@@ -33,6 +35,13 @@ export interface ToolOutputEnvelope {
   stdout: string;
   stderr?: string;
   exitCode: number;
+  rawOutputDigest?: string;
+}
+
+export interface ToolCommandSpec {
+  executable: string;
+  args: string[];
+  outputTarget: ToolOutputTarget;
 }
 
 export interface EvidenceCollector {
@@ -49,5 +58,5 @@ export interface ToolDefinition {
   licenseNote?: string;
   purpose: string;
   executable: string;
-  buildArgs(root: string, outputFile: string): string[];
+  buildCommands(root: string, outputFile: string): ToolCommandSpec[];
 }

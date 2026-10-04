@@ -113,6 +113,7 @@ export class RepositoryEvidenceCollector {
         sizeBytes: Buffer.byteLength(result.content, "utf8"),
         lineCount: lineCount(result.content),
         contentDigest,
+        evidenceRecordDigest: digestJson(payload),
       };
 
       const evidenceKey = deterministicEvidenceId({
@@ -136,7 +137,7 @@ export class RepositoryEvidenceCollector {
         source: "repository-snapshot",
         path: file.path,
         collectedAt: new Date().toISOString(),
-        contentDigest: digestJson(payload),
+        contentDigest,
         data: payload,
       });
     }

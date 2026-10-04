@@ -2,6 +2,14 @@
 -- Eagle TDI v1: Technical Debt Intelligence Registry
 -- Evidence-first, tenant-isolated, replayable technical-debt governance.
 
+-- Tenant-scoped FK targets. Parent tables use globally unique UUID PKs, so
+-- these composite unique indexes make tenant/resource scope enforceable by FK.
+CREATE UNIQUE INDEX IF NOT EXISTS workspaces_tenant_id_uq
+  ON workspaces (tenant_id, id);
+
+CREATE UNIQUE INDEX IF NOT EXISTS repositories_tenant_id_uq
+  ON repositories (tenant_id, id);
+
 CREATE TABLE IF NOT EXISTS tdi_scans (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   tenant_id uuid NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
@@ -21,7 +29,15 @@ CREATE TABLE IF NOT EXISTS tdi_scans (
 
   created_at timestamptz NOT NULL DEFAULT now(),
 
-  UNIQUE (tenant_id, repository_id, commit_sha, collector_version)
+  UNIQUE (tenant_id, repository_id, commit_sha, collector_version),
+
+  CONSTRAINT tdi_scans_workspace_scope_fk
+    FOREIGN KEY (tenant_id, workspace_id)
+    REFERENCES workspaces (tenant_id, id),
+
+  CONSTRAINT tdi_scans_repository_scope_fk
+    FOREIGN KEY (tenant_id, repository_id)
+    REFERENCES repositories (tenant_id, id)
 );
 
 CREATE UNIQUE INDEX IF NOT EXISTS tdi_scans_tenant_id_uq
@@ -63,6 +79,14 @@ CREATE TABLE IF NOT EXISTS tdi_evidence (
     FOREIGN KEY (tenant_id, scan_id)
     REFERENCES tdi_scans (tenant_id, id)
     ON DELETE CASCADE,
+
+  CONSTRAINT tdi_evidence_workspace_scope_fk
+    FOREIGN KEY (tenant_id, workspace_id)
+    REFERENCES workspaces (tenant_id, id),
+
+  CONSTRAINT tdi_evidence_repository_scope_fk
+    FOREIGN KEY (tenant_id, repository_id)
+    REFERENCES repositories (tenant_id, id),
 
   CONSTRAINT tdi_evidence_line_range_ck
     CHECK (line_end IS NULL OR line_start IS NULL OR line_end >= line_start)
@@ -116,7 +140,11 @@ CREATE TABLE IF NOT EXISTS tdi_findings (
   CONSTRAINT tdi_findings_scan_scope_fk
     FOREIGN KEY (tenant_id, scan_id)
     REFERENCES tdi_scans (tenant_id, id)
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+
+  CONSTRAINT tdi_findings_workspace_scope_fk
+    FOREIGN KEY (tenant_id, workspace_id)
+    REFERENCES workspaces (tenant_id, id)
 );
 
 CREATE INDEX IF NOT EXISTS tdi_findings_scan_idx
@@ -186,7 +214,15 @@ CREATE TABLE IF NOT EXISTS tdi_debt_records (
   CONSTRAINT tdi_debt_scan_scope_fk
     FOREIGN KEY (tenant_id, scan_id)
     REFERENCES tdi_scans (tenant_id, id)
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+
+  CONSTRAINT tdi_debt_workspace_scope_fk
+    FOREIGN KEY (tenant_id, workspace_id)
+    REFERENCES workspaces (tenant_id, id),
+
+  CONSTRAINT tdi_debt_repository_scope_fk
+    FOREIGN KEY (tenant_id, repository_id)
+    REFERENCES repositories (tenant_id, id)
 );
 
 CREATE INDEX IF NOT EXISTS tdi_debt_priority_idx
@@ -215,7 +251,11 @@ CREATE TABLE IF NOT EXISTS tdi_decisions (
   CONSTRAINT tdi_decisions_td_scope_fk
     FOREIGN KEY (tenant_id, td_id)
     REFERENCES tdi_debt_records (tenant_id, id)
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+
+  CONSTRAINT tdi_decisions_workspace_scope_fk
+    FOREIGN KEY (tenant_id, workspace_id)
+    REFERENCES workspaces (tenant_id, id)
 );
 
 CREATE INDEX IF NOT EXISTS tdi_decisions_td_time_idx
